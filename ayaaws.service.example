@@ -5,9 +5,9 @@ After=network.target
 [Service]
 User=pedouard
 Group=www-data
-WorkingDirectory=/home/pedouard/git/ayaa/scripts
-Environment="PATH=/home/pedouard/git/ayaa/venv/bin"
-ExecStart=/home/pedouard/git/ayaa/venv/bin/uwsgi --ini ayaaws.ini
+WorkingDirectory=/home/pedouard/git/ayaavalon/scripts
+Environment="PATH=/home/pedouard/git/ayaavalon/venv/bin"
+ExecStart=/home/pedouard/git/ayaavalon/venv/bin/uwsgi --ini ayaavalon.ini
 
 [Install]
 WantedBy=multi-user.target
