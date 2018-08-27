@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name 172.16.14.159;
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/pedouard/git/ayaa/scripts/ayaaws.sock;
+    }
+}
+

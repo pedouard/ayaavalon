@@ -1,0 +1,14 @@
+[Unit]
+Description=uWSGI instance to serve ayaaws
+After=network.target
+
+[Service]
+User=pedouard
+Group=www-data
+WorkingDirectory=/home/pedouard/git/ayaa/scripts
+Environment="PATH=/home/pedouard/git/ayaa/venv/bin"
+ExecStart=/home/pedouard/git/ayaa/venv/bin/uwsgi --ini ayaaws.ini
+
+[Install]
+WantedBy=multi-user.target
+

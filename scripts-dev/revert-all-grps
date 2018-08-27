@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import env
+import sys
+import json
+import pandas as pd
+from collections import Counter
+from withings.api import WithingsAPI
+
+df_ayaa = pd.read_csv("ayaa.csv")
+df_clock = pd.read_csv("clock.csv")[["mac", "deploy_grp"]]
+
+macs = list(df_ayaa.mac) + list(df_clock.mac)
+grps = list(df_ayaa.deploy_grp) + list(df_clock.deploy_grp)
+
+df = pd.DataFrame({"mac": macs, "grps": grps})
+df = df.replace(176, 171) # That can happen
+df = df[~df.grps.isin([10064, 10022])].drop_duplicates(["mac"]).reset_index()
+
+api = WithingsAPI(auto_logout=False)
+api.login("paul.edouard@withings.com", "qwertyqwerty")
+
+for i, row in df.iterrows():
+    print
+    print "%d/%d" % (i, len(df) - 1)
+    print row.mac, row.grps
+    if row.grps == 10012:
+        api.call("v2/firmware", "deviceupdate", mac_addresses=json.dumps([row.mac]),
+            deploygrp=row.grps, model=55)

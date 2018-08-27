@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import env
+from lib import utils
+from withings.datascience.core import setup_logging, config
+import logging
+
+setup_logging('cron.datascience.example')
+
+foo = config.get('example', 'foo')
+logging.info("config: foo=%s" % foo)
+
+logging.info("utils.add(2, 2) = %s" % utils.add(2, 2))
+

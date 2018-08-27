@@ -1,0 +1,50 @@
+[example]
+db_uri=postgresql://postgres:pass@localhost:5432/example
+test_db_uri=postgresql://postgres:pass@localhost:5432/test_example
+foo=bar
+
+# --------------- #
+#                 #
+#     Logging     #
+#                 #
+# --------------- #
+
+[loggers]
+keys=root, withings
+
+[handlers]
+keys=stream, syslog, email
+
+[formatters]
+keys=form0
+
+[logger_root]
+level=DEBUG
+handlers=stream
+
+[logger_withings]
+level=DEBUG
+handlers=
+qualname=withings
+formatter=form0
+
+[handler_stream]
+class=StreamHandler
+args=()
+level=DEBUG
+formatter=form0
+
+[handler_syslog]
+class=handlers.SysLogHandler
+args=('/dev/log', 'local0')
+level=INFO
+formatter=form0
+
+[handler_email]
+class=handlers.SMTPHandler
+level=CRITICAL
+args=('mta.withings.local', 'datascience+logger-dev@withings.com', ['datascience@withings.com'], '[LOG][dev][datascience] Error')
+formatter=form0
+
+[formatter_form0]
+format= %(module)s - %(asctime)s - %(levelname)s - %(message).1000s

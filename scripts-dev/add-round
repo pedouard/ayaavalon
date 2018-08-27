@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import env
+import sys
+
+from lib.db import database
+from lib import utils
+from datetime import datetime, timedelta
+
+USAGE = """Create an inactive round
+./add-round 2018-02-08
+"""
+
+if len(sys.argv) != 2:
+    print USAGE
+    exit()
+
+date_str = sys.argv[1]
+date = datetime.strptime(date_str, "%Y-%m-%d")
+session = database.session()
+
+try:
+
+    #tdstart = timedelta(hours=17, minutes=50)
+    #tdend = timedelta(hours=17, minutes=55)
+    utils.add_round(session, date)
+
+    #tdstart = timedelta(hours=18, minutes=00)
+    #tdend = timedelta(hours=18, minutes=05)
+    #utils.add_round(session, date, tdstart, tdend)
+    print "Success!"
+except Exception, e:
+    print e
+

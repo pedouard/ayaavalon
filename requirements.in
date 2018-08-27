@@ -1,0 +1,18 @@
+nose
+sqlalchemy
+alembic
+psycopg2
+beanstalkc
+flask
+webargs
+matplotlib
+scipy
+sklearn
+docopt
+pandas
+python-firebase
+firebase_admin
+pyfcm
+-e git+ssh://git@git.corp.withings.com/pywithings/api@master#egg=withings.api
+-e git+ssh://git@git.corp.withings.com/pywithings/datascience-core@master#egg=withings.datascience.core
+-e git+ssh://git@git.corp.withings.com/pywithings/datascience-dexter@9fc69c798fe5804f3fc1068e54fc1bb53578f055#egg=withings.datascience.dexter

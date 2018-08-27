@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import env
+
+from lib.db import database
+from lib import utils
+
+session = database.session()
+utils.truncate_all_tables(session)
+print "Success!"
+

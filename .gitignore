@@ -1,0 +1,8 @@
+*~
+*pyc
+datascience.conf
+venv/
+.ropeproject
+lib/www/deploy_grp_list
+lib/www/kills
+lib/www/notifs
