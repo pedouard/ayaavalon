@@ -1,4 +1,4 @@
-[example]
+[ayaavalon]
 db_uri=postgresql://postgres:pass@localhost:5432/example
 test_db_uri=postgresql://postgres:pass@localhost:5432/test_example
 foo=bar

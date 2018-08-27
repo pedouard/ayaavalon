@@ -10,9 +10,17 @@ scipy
 sklearn
 docopt
 pandas
-python-firebase
-firebase_admin
-pyfcm
--e git+ssh://git@git.corp.withings.com/pywithings/api@master#egg=withings.api
--e git+ssh://git@git.corp.withings.com/pywithings/datascience-core@master#egg=withings.datascience.core
--e git+ssh://git@git.corp.withings.com/pywithings/datascience-dexter@9fc69c798fe5804f3fc1068e54fc1bb53578f055#egg=withings.datascience.dexter
+eegtools
+jupyter
+numpy
+http://download.pytorch.org/whl/cpu/torch-0.3.1-cp27-cp27mu-linux_x86_64.whl
+pint
+tables
+pysmb
+dbus-python
+dask[complete]
+keyring
+bokeh
+-i https://devpi.corp.withings.com/root/prod/+simple/
+parkscape
+withings.api

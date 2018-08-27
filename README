@@ -1,0 +1,68 @@
+PROJECT STRUCTURE
+=================
+
+lib/
+
+    This is where the repository code goes.
+
+scripts/
+
+    This is where the entry points to the code goes.
+
+tests/
+tests/run_tests.sh
+
+    A directory to put the tests in. The run_tests.sh shell script is
+    called by the deployer tool.
+
+datascience.conf.example
+
+    A configuration file example that can be copied to
+    datascience.conf in the same repository.
+
+requirements.in
+requirements.txt
+
+    Python dependencies for this project.
+
+    The requirements.in file contains the name of the libraries the
+    project directly depends on, with as few version info as possible
+    (i.e. usually none).
+
+    The requirements.txt file contains all dependencies of the
+    project, with pinned versions. It is usually generated with the
+    command "pip freeze > requirements.txt".
+
+
+alembic/
+alembic.ini
+
+    Files for the alembic database migration tool
+
+build.sh
+deploy.sh
+predeploy.sh
+run
+
+    Scripts for the deployer tool
+
+
+
+Install dependencies::
+
+  sudo apt-get install 'libatlas*' gfortran libpq5 libpq-dev libhdf5-dev \
+                        python-virtualenv python-dev
+
+Create a configuration file::
+
+  cp datascience.conf.example datascience.conf
+  <edit datascience.conf>
+
+
+pip install --upgrade  -r requirements.in
+pip freeze > requirements.txt
+
+
+./run alembic revision --autogenerate -m "Add column good signal"
+  Generating ./alembic/versions/93e595d4fe32_add_column_good_signal.py ... done
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Run command in virtualenv
+
+set -e
+
+DIR=$(cd $(dirname "$0") && pwd)
+DIR_VENV=$DIR/venv
+
+if [ ! -d $DIR_VENV ]; then
+	(>&2 echo -e "\e[01;31mERROR: virtualenv was not found. Run build.sh to create it.\e[0m")
+	exit 1
+fi
+
+source $DIR_VENV/bin/activate
+[[ "$@" ]] && "$@"

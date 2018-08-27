@@ -1,0 +1,45 @@
+alembic==0.9.6
+backports.functools-lru-cache==1.4
+beanstalkc==0.4.0
+beanstalkc3==0.4.0
+click==6.7
+configparser==3.5.0
+cycler==0.10.0
+docopt==0.6.2
+Flask==0.10.1
+functools32==3.2.3.post2
+future==0.16.0
+itsdangerous==0.24
+Jinja2==2.10
+jsonschema==2.6.0
+Mako==1.0.7
+MarkupSafe==1.0
+marshmallow==2.15.0
+matplotlib==2.1.1
+nose==1.3.7
+numpy==1.13.3
+pandas==0.21.1
+prompt-toolkit==1.0.15
+psutil==5.4.2
+psycopg2==2.7.3.2
+pyparsing==2.2.0
+python-dateutil==2.6.1
+python-editor==1.0.3
+pytz==2017.3
+scikit-learn==0.19.1
+scipy==1.0.0
+setuptools-git==1.2
+six==1.11.0
+sklearn==0.0
+SQLAlchemy==1.1.15
+subprocess32==3.2.7
+wcwidth==0.1.7
+webargs==1.8.1
+Werkzeug==0.13
+python-firebase==1.2
+firebase_admin==2.8.0
+pyfcm==1.4.3
+Flask-Autodoc==0.1.2
+-e git+ssh://git@git.corp.withings.com/pywithings/api@dcfbc96be2e74a55aadb7dcdf0238797d1dbf4f5#egg=withings.api
+-e git+ssh://git@git.corp.withings.com/pywithings/datascience-core@21c3e981b00c9a4fa56ae01943aeca01634e2207#egg=withings.datascience.core
+-e git+ssh://git@git.corp.withings.com/pywithings/datascience-dexter@9fc69c798fe5804f3fc1068e54fc1bb53578f055#egg=withings.datascience.dexter
