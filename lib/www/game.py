@@ -17,14 +17,14 @@ import status
 from www import app, session, auto, rollback_on_exception
 
 @auto.doc()
-@app.route("/game/get")
+@app.route("/get_game")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
 @rollback_on_exception
-def player_get(userid, sessionid):
+def get_game(userid, sessionid):
     return json_response({
         'status': status.OK,
         'body': "Ok!"
@@ -32,14 +32,113 @@ def player_get(userid, sessionid):
 
 
 @auto.doc()
-@app.route("/game/create")
+@app.route("/join_game")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
 @rollback_on_exception
-def player_create(userid, sessionid):
+def join_game(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/start_game")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def start_game(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/stop_game")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def stop_game(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/reorder_players")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def reorder_players(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/mission_start")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def start_mission(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/vote")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def vote(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@auto.doc()
+@app.route("/do_mission")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def do_mission(userid, sessionid):
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+
+@auto.doc()
+@app.route("/kill_merlin")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+})
+@handle_exceptions
+@rollback_on_exception
+def kill_merlin(userid, sessionid):
     return json_response({
         'status': status.OK,
         'body': "Ok!"
