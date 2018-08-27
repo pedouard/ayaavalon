@@ -40,7 +40,7 @@ def rollback_on_exception(func):
 @nocache
 @handle_exceptions
 def home():
-    return json_response({"status": 0, "body": "AYAA!"})
+    return json_response({"status": 0, "body": "Avalon!"})
 
 """ Import routes """
 

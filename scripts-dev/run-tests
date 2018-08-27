@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import env
+
+import sys
+import urllib
+import urllib2
+import json
+
+from datetime import datetime, timedelta
+
+from lib import utils
+from lib.db import database
+from withings.datascience.core import config
+
+now = datetime.now()
+session = database.session()
+
+def call(route, **kwargs):
+    url = "http://0.0.0.0:6444" + route + "?"
+    url += urllib.urlencode(kwargs)
+
+    print "Call: " + url
+    ans = urllib2.urlopen(url).read()
+
+    try:
+        res = json.loads(ans)
+    except Exception, e:
+        raise Exception("Failed to json decode:\n%s\n" % ans)
+
+    if res["status"] == 0:
+        return res["status"], res["body"]
+    else:
+        return res["status"], res["error"]
+
+def check_status(status, body, target):
+    assert status == target, "%d != %d - %s" % (status, target, body)
+    print "Ok"
+
+def check_equal(value, target):
+    assert value == target, "%s != %s" % (value, target)
+    print "Ok"
+
+print "Empty db"
+utils.truncate_all_tables(session)
+
+print "Create good user"
+for i in range(10):
+    status, body = call("/player_create", userid=100 + i, info="{}")
+    check_status(status, body, 0)
+
+print "Get good user"
+for i in range(10):
+    status, body = call("/player_get", userid=100 + i)
+    check_status(status, body, 0)
+    check_equal(body["userid"], 100+i)
+    check_equal(body["info"], {})
+
+
+print "Add players"
+for i in range(5):
+    status, body = call("/join_game", userid=100 + i)
+    check_status(status, body, 0)
+
+status, body = call("/start_game", userid=100)
+check_status(status, body, 0)
+
+# TODO: add cases for all failures
+

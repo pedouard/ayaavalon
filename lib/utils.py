@@ -5,7 +5,6 @@ import json
 from datetime import datetime, timedelta
 
 from withings.datascience.core import config
-from withings.api import WithingsAPI
 from lib.db.database import Player, Game
 from www import status
 
@@ -43,3 +42,18 @@ def round_is_ongoing(session):
     players = session.query(Player).filter_by(is_alive_player=True).all()
     return (len(players) > 1)
 """
+
+def format_player(player):
+    return {
+        "id": player.id_player,
+        "userid": player.userid_player,
+        "info": player.info_player,
+        "modified": time.mktime(player.modified_player.timetuple()),
+        "created": time.mktime(player.created_player.timetuple())
+    }
+
+def truncate_all_tables(session):
+    session.query(Player).delete()
+    session.query(Game).delete()
+    session.commit()
+
