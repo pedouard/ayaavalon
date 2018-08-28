@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 from lib import utils
 from lib.db import database
+from lib.www.status import *
 from withings.datascience.core import config
 
 now = datetime.now()
@@ -33,37 +34,286 @@ def call(route, **kwargs):
     else:
         return res["status"], res["error"]
 
+
 def check_status(status, body, target):
     assert status == target, "%d != %d - %s" % (status, target, body)
     print "Ok"
+
 
 def check_equal(value, target):
     assert value == target, "%s != %s" % (value, target)
     print "Ok"
 
+
 print "Empty db"
 utils.truncate_all_tables(session)
 
+status, body = call("/abort_game")
+check_status(status, body, 0)
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, USER_NOT_FOUND[0])
+
 print "Create good user"
-for i in range(10):
+for i in range(11):
     status, body = call("/player_create", userid=100 + i, info="{}")
     check_status(status, body, 0)
 
+status, body = call("/player_create", userid=100, info="{}")
+check_status(status, body, USER_ALREADY_EXISTS[0])
+
 print "Get good user"
-for i in range(10):
+for i in range(11):
     status, body = call("/player_get", userid=100 + i)
     check_status(status, body, 0)
     check_equal(body["userid"], 100+i)
     check_equal(body["info"], {})
 
+status, body = call("/player_get", userid=200)
+check_status(status, body, USER_NOT_FOUND[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["is_started"], False)
+check_equal(body["nplayers"], 0)
 
 print "Add players"
-for i in range(5):
+for i in range(10):
     status, body = call("/join_game", userid=100 + i)
     check_status(status, body, 0)
+
+status, body = call("/join_game", userid=110)
+check_status(status, body, GAME_IS_FULL[0])
+
+status, body = call("/join_game", userid=100)
+check_status(status, body, ALREADY_IN_THE_GAME[0])
+
+status, body = call("/propose_mission", userid=100, members=[0, 1, 2])
+check_status(status, body, GAME_MUST_BE_STARTED[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["is_started"], False)
+check_equal(body["nplayers"], 10)
+check_equal(body["players"][0]["is_host"], True)
+
+print "Starting game"
+status, body = call("/start_game", userid=101)
+check_status(status, body, MUST_BE_HOST[0])
 
 status, body = call("/start_game", userid=100)
 check_status(status, body, 0)
 
-# TODO: add cases for all failures
+status, body = call("/join_game", userid=110)
+check_status(status, body, GAME_IS_STARTED[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["is_started"], True)
+check_equal(body["mission_results"], [])
+check_equal(body["mission_is_proposed"], False)
+check_equal(body["mission_is_started"], False)
+check_equal(body["waiting_for_assassination"], False)
+check_equal(body["lady"], False)
+check_equal(body["mission_size"], 3)
+check_equal(body["fails_required"], 1)
+check_equal(body["imposition_in"], 5)
+
+print "Propose a mission"
+status, body = call("/vote", userid=100, v=True)
+check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/propose_mission", userid=101, members=[0, 1, 2])
+check_status(status, body, MUST_BE_LEADER[0])
+
+status, body = call("/propose_mission", userid=100, members=[0, 1])
+check_status(status, body, WRONG_MISSION_SIZE[0])
+
+status, body = call("/propose_mission", userid=100, members=[0, 1, 10])
+check_status(status, body, INVALID_PARAMS[0])
+
+status, body = call("/propose_mission", userid=100, members=[0, 1, 2])
+check_status(status, body, 0)
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["mission_is_proposed"], True)
+check_equal(body["players"][0]["is_member"], True)
+check_equal(body["players"][8]["is_member"], False)
+check_equal(body["mission_is_started"], False)
+check_equal(body["lady"], False)
+
+print "Vote"
+for i in range(9):
+    status, body = call("/vote", userid=100 + i, v=True)
+    check_status(status, body, 0)
+    status, body = call("/vote", userid=100 + i, v=True)
+    check_status(status, body, HAS_ALREADY_VOTED[0])
+
+status, body = call("/do_mission", userid=109, v=True)
+check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/vote", userid=109, v=True)
+check_status(status, body, 0)
+status, body = call("/vote", userid=109, v=True)
+check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 0)
+check_equal(body["turn"], 0)
+check_equal(body["mission_is_proposed"], True)
+check_equal(body["mission_is_started"], True)
+check_equal(body["lady"], False)
+
+print "Participate"
+
+status, body = call("/do_mission", userid=109, v=True)
+check_status(status, body, MUST_BE_MEMBER[0])
+
+status, body = call("/do_mission", userid=100, v=True)
+check_status(status, body, 0)
+
+status, body = call("/do_mission", userid=100, v=True)
+check_status(status, body, HAS_ALREADY_VOTED[0])
+
+status, body = call("/do_mission", userid=101, v=True)
+check_status(status, body, 0)
+
+status, body = call("/do_mission", userid=102, v=True)
+check_status(status, body, 0)
+
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 1)
+check_equal(body["turn"], 1)
+check_equal(body["mission_is_proposed"], False)
+check_equal(body["mission_is_started"], False)
+check_equal(body["mission_results"], [True])
+check_equal(body["lady"], False)
+
+print "Turn 2"
+status, body = call("/propose_mission", userid=101, members=[0, 1, 2, 3])
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=False)
+    check_status(status, body, 0)
+
+status, body = call("/propose_mission", userid=102, members=[0, 1, 2, 3])
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=False)
+    check_status(status, body, 0)
+
+status, body = call("/propose_mission", userid=103, members=[0, 1, 2, 3])
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=False)
+    check_status(status, body, 0)
+
+status, body = call("/propose_mission", userid=104, members=[0, 1, 2, 3])
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=False)
+    check_status(status, body, 0)
+
+status, body = call("/propose_mission", userid=105, members=[0, 1, 2, 3])
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=False)
+    check_status(status, body, WRONG_TIME_FOR_ACTION[0]) # Mission is imposed
+
+for i in range(4):
+    status, body = call("/do_mission", userid=100 + i, v=False)
+    check_status(status, body, 0)
+
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 6)
+check_equal(body["turn"], 2)
+check_equal(body["mission_is_proposed"], False)
+check_equal(body["mission_is_started"], False)
+check_equal(body["mission_results"], [True, False])
+check_equal(body["lady"], True)
+
+print "Turn 3"
+status, body = call("/propose_mission", userid=106, members=[0, 1, 2, 3], lady=10)
+check_status(status, body, INVALID_PARAMS[0])
+
+status, body = call("/propose_mission", userid=106, members=[0, 1, 2, 3], lady=6)
+check_status(status, body, INVALID_PARAMS[0])
+
+
+status, body = call("/propose_mission", userid=106, members=[0, 1, 2, 3], lady=0)
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=True)
+    check_status(status, body, 0)
+
+for i in range(4):
+    status, body = call("/do_mission", userid=100 + i, v=True)
+    check_status(status, body, 0)
+
+status, body = call("/kill_merlin", userid=101, target=0)
+check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 7)
+check_equal(body["turn"], 3)
+check_equal(body["mission_is_proposed"], False)
+check_equal(body["mission_is_started"], False)
+check_equal(body["mission_results"], [True, False, True])
+check_equal(body["lady"], True)
+
+print "Turn 4"
+status, body = call("/propose_mission", userid=107, members=[0, 1, 2, 3, 4], lady=1)
+check_status(status, body, 0)
+
+for i in range(10):
+    status, body = call("/vote", userid=100 + i, v=True)
+    check_status(status, body, 0)
+
+for i in range(5):
+    status, body = call("/do_mission", userid=100 + i, v=True)
+    check_status(status, body, 0)
+
+status, body = call("/propose_mission", userid=107, members=[0, 1, 2, 3, 4], lady=2)
+check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 7)
+check_equal(body["turn"], 3)
+check_equal(body["mission_is_proposed"], True)
+check_equal(body["mission_is_started"], True)
+check_equal(body["mission_results"], [True, False, True, True])
+check_equal(body["lady"], True)
+
+for i in range(10):
+    status, body = call("/kill_merlin", userid=100 + i, target=i)
+    #check_status(status, body, WRONG_TIME_FOR_ACTION[0])
+
+status, body = call("/get_game_state", userid=100)
+check_status(status, body, 0)
+check_equal(body["idx"], 7)
+check_equal(body["turn"], 3)
+check_equal(body["mission_is_proposed"], True)
+check_equal(body["mission_is_started"], True)
+check_equal(body["mission_results"], [True, False, True, True])
+check_equal(body["lady"], True)
+check_equal(body["good_wins"], True)
+
+status, body = call("/propose_mission", userid=107, members=[0, 1, 2, 3, 4], lady=2)
+check_status(status, body, GAME_MUST_BE_STARTED[0])
+
+
 

@@ -16,46 +16,36 @@ from withings.datascience.core.flask_utils import init_statsd, nocache, \
 import status
 from www import app, session, auto, rollback_on_exception
 
-g = game.Game()
+g = game.Game(session)
 
-@auto.doc()
-@app.route("/get_game")
+@app.route("/get_game_state")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
-def get_game(userid):
-    # TODO
+def get_game_state(userid):
+    player = session.query(Player).filter_by(userid_player=userid).first()
+    if player is None:
+        raise WithingsException(*status.USER_NOT_FOUND)
+
+    p = g._get_by_userid(userid)
     return json_response({
         'status': status.OK,
-        'body': "Ok!"
+        'body': g.dump(p)
         })
 
 
-@auto.doc()
 @app.route("/join_game")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
 def join_game(userid):
     player = session.query(Player).filter_by(userid_player=userid).first()
     if player is None:
         raise WithingsException(*status.USER_NOT_FOUND)
-
-    print g._get_by_userid(userid)
-    if g._get_by_userid(userid):
-        raise WithingsException(*status.ALREADY_IN_THE_GAME)
-
-    if g.is_started:
-        raise WithingsException(*status.GAME_IS_STARTED)
-
-    if g.nplayers == 10:
-        raise WithingsException(*status.GAME_IS_FULL)
 
     g.add_player(player)
 
@@ -64,53 +54,41 @@ def join_game(userid):
         'body': "Ok!"
         })
 
-@auto.doc()
+
 @app.route("/start_game")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
 def start_game(userid):
     p = check_player(userid)
-
-    if not p.is_host:
-        raise WithingsException(*status.MUST_BE_HOST)
-
-    if g.nplayers not in game.GAME_SETUPS:
-        raise WithingsException(*status.NOT_ENOUGH_PLAYERS)
-
-    g.start()
-
+    g.start(p)
     return json_response({
         'status': status.OK,
         'body': "Ok!"
         })
 
-@auto.doc()
-@app.route("/stop_game")
+
+@app.route("/abort_game")
 @nocache
-@use_kwargs({
-    'userid': fields.Int(required=True),
-})
+@use_kwargs({})
 @handle_exceptions
-@rollback_on_exception
-def stop_game(userid):
-    # TODO
+def abort_game():
+    global g
+    g = game.Game(session)
     return json_response({
         'status': status.OK,
         'body': "Ok!"
         })
 
-@auto.doc()
+
 @app.route("/reorder_players")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
 def reorder_players(userid):
     # TODO
     return json_response({
@@ -118,62 +96,83 @@ def reorder_players(userid):
         'body': "Ok!"
         })
 
-@auto.doc()
-@app.route("/mission_start")
+
+@app.route("/propose_mission")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
+    'members': fields.String(required=True),
+    'lady': fields.Int(required=False),
 })
 @handle_exceptions
-@rollback_on_exception
-def start_mission(userid):
-    # TODO
+def propose_mission(userid, members, lady=0):
+    p = check_player(userid)
+    members = json.loads(members)
+    g.propose_mission(p, members, lady)
+
     return json_response({
         'status': status.OK,
         'body': "Ok!"
         })
 
-@auto.doc()
 @app.route("/vote")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
+    'v': fields.Boolean(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
-def vote(userid):
-    # TODO
+def vote(userid, v):
+    p = check_player(userid)
+    g.vote(p, v)
+
     return json_response({
         'status': status.OK,
         'body': "Ok!"
         })
 
-@auto.doc()
 @app.route("/do_mission")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
+    'v': fields.Boolean(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
-def do_mission(userid):
-    # TODO
+def do_mission(userid, v):
+    p = check_player(userid)
+    g.do_mission(p, v)
+
     return json_response({
         'status': status.OK,
         'body': "Ok!"
         })
 
 
-@auto.doc()
 @app.route("/kill_merlin")
+@nocache
+@use_kwargs({
+    'userid': fields.Int(required=True),
+    'target': fields.Int(required=True),
+})
+@handle_exceptions
+    # TODO
+def kill_merlin(userid, target):
+    p = check_player(userid)
+    g.assassinate(p, target)
+
+    return json_response({
+        'status': status.OK,
+        'body': "Ok!"
+        })
+
+@app.route("/verify")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
 })
 @handle_exceptions
-@rollback_on_exception
     # TODO
-def kill_merlin(userid):
+def verify(userid):
     return json_response({
         'status': status.OK,
         'body': "Ok!"
@@ -187,6 +186,6 @@ def check_player(userid):
 
     p = g._get_by_userid(userid)
     if not p:
-        raise WithingsException(*status.ALREADY_IN_THE_GAME)
+        raise WithingsException(*status.NOT_IN_THE_GAME)
 
     return p
