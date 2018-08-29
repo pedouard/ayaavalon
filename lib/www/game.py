@@ -165,17 +165,30 @@ def kill_merlin(userid, target):
         'body': "Ok!"
         })
 
-@app.route("/verify")
+@app.route("/use_lady")
 @nocache
 @use_kwargs({
     'userid': fields.Int(required=True),
+    'target': fields.Int(required=True),
 })
 @handle_exceptions
     # TODO
-def verify(userid):
+def use_lady(userid, target):
+    p = check_player(userid)
+
     return json_response({
         'status': status.OK,
-        'body': "Ok!"
+        'body': g.use_lady(p, target)
+        })
+
+@app.route("/dump_database")
+@nocache
+@use_kwargs({})
+@handle_exceptions
+def dump_database():
+    return json_response({
+        'status': status.OK,
+        'body': [format_game(g_) for g_ in session.query(Game).all()]
         })
 
 
@@ -189,3 +202,15 @@ def check_player(userid):
         raise WithingsException(*status.NOT_IN_THE_GAME)
 
     return p
+
+
+def format_game(g_):
+    return {
+        "id": g_.id_game,
+        "version": g_.version_game,
+        "data": g_.info_game,
+        "created": g_.created_game,
+        "modified": g_.modified_game,
+    }
+
+

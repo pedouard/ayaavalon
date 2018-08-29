@@ -1,0 +1,40 @@
+
+
+html, body {
+    height: 100%;
+    background: #3a3836;
+    overflow-x: hidden;
+    color: #e6e6e5;
+
+    /* font-family: Roboto; */
+    /* font-weight: 500; */
+    font-size: 15px;
+
+    overflow-y: scroll; /* has to be scroll, not auto */
+    -webkit-overflow-scrolling: touch;
+}
+
+#dashboard_tabs, .row {
+    height: 100%;
+}
+
+.row {
+    margin: 0;
+}
+
+#ws-error-box, #ws-info-box {
+    background: #d9534f;
+    font-size: 16px;
+    padding: 16px;
+    border: 1px solid #c16361;
+    box-shadow: 4px 7px #00000026;
+    position: absolute;
+    width: 100%;
+    bottom: 25px;
+    display: none;
+}
+
+#ws-info-box {
+    background: #428bca;
+    border: 1px solid #4886bb;
+}

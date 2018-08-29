@@ -57,6 +57,7 @@ class Game(Base):
     __tablename__ = "game"
 
     id_game = Column(Integer, primary_key=True)
+    version_game = Column(Integer, nullable=False)
 
     info_game = Column(JSON, nullable=False)
 

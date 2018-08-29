@@ -35,7 +35,6 @@ NAMES = {
     BADGUY: "Bad Guy",
 }
 
-
 GAME_SETUPS = {
     2: {
         "missions": [1, 2, 1, 1, 2],
@@ -88,7 +87,14 @@ GAME_SETUPS = {
     },
 }
 
-
+STATE_EMPTY = 0
+STATE_NOT_STARTED = 1
+STATE_WAITING_FOR_MISSION = 2
+STATE_WAITING_FOR_VOTES = 3
+STATE_MISSION_PENDING = 4
+STATE_LADY = 5
+STATE_ASSASSIN = 6
+STATE_GAME_FINISHED = 7
 
 class Player():
 
@@ -167,15 +173,12 @@ class Game():
         self.players = []
         self.nplayers = 0
 
-        self.is_started = False
+        self.state = STATE_EMPTY
         self.turn = 0
 
         self.idx = 0
 
         self.mission_results = []
-        self.mission_is_proposed = None
-        self.mission_is_started = None
-        self.waiting_for_assassination = False
 
         self.game_setup = None
 
@@ -190,15 +193,11 @@ class Game():
         big_data = {
             "players": [p.dump() for p in self.players],
             "nplayers": self.nplayers,
-            "is_started": self.is_started,
+            "state": self.state,
 
             "turn": self.turn,
             "idx": self.idx,
-
             "mission_results": self.mission_results,
-            "mission_is_proposed": self.mission_is_proposed,
-            "mission_is_started": self.mission_is_started,
-            "waiting_for_assassination": self.waiting_for_assassination,
 
             "game_setup": self.game_setup,
             "lady": self.lady,
@@ -218,7 +217,7 @@ class Game():
 
 
     def add_player(self, p):
-        if self.is_started:
+        if self.state not in [STATE_EMPTY, STATE_NOT_STARTED]:
             raise WithingsException(*status.GAME_IS_STARTED)
 
         if self._get_by_userid(p.userid_player):
@@ -227,12 +226,13 @@ class Game():
         if self.nplayers == 10:
             raise WithingsException(*status.GAME_IS_FULL)
 
+        self.state = STATE_NOT_STARTED
         self.players.append(Player(p, is_host=(self.nplayers == 0)))
         self.nplayers = len(self.players)
 
 
     def start(self, p):
-        if self.is_started:
+        if self.state not in [STATE_NOT_STARTED]:
             raise WithingsException(*status.GAME_IS_STARTED)
 
         if not p.is_host:
@@ -248,13 +248,12 @@ class Game():
         for i, p in enumerate(self.players):
             p.role = characters[i]
 
-        self.is_started = True
         self._start_new_turn()
 
 
     def propose_mission(self, p, members, lady):
-        if not self.is_started:
-            raise WithingsException(*status.GAME_MUST_BE_STARTED)
+        if self.state != STATE_WAITING_FOR_MISSION:
+            raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
 
         if self.players[self.idx].userid != p.userid:
             raise WithingsException(*status.MUST_BE_LEADER)
@@ -265,13 +264,10 @@ class Game():
         if np.max(members) > self.nplayers - 1 or np.min(members) < 0 or len(members) != len(set(members)):
             raise WithingsException(*status.INVALID_PARAMS)
 
-        if self.mission_is_proposed or self.mission_is_started:
-            raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
-
         if self.lady and (lady < 0 or lady > len(members) or self.players[lady].userid == p.userid):
             raise WithingsException(*status.INVALID_PARAMS)
 
-        self.mission_is_proposed = True
+        self.state = STATE_WAITING_FOR_VOTES
         for id_ in members:
             self.players[id_].is_member = True
 
@@ -279,15 +275,12 @@ class Game():
             self.players[lady].has_lady = True
 
         if self.imposition_in == 1:
-            # Imposition !
-            self.mission_is_started = 1
+            self.state = STATE_MISSION_PENDING
+
 
 
     def vote(self, p, v):
-        if not self.is_started:
-            raise WithingsException(*status.GAME_MUST_BE_STARTED)
-
-        if not self.mission_is_proposed or self.mission_is_started:
+        if not self.state == STATE_WAITING_FOR_VOTES:
             raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
 
         if p.has_voted:
@@ -300,10 +293,7 @@ class Game():
 
 
     def do_mission(self, p, v):
-        if not self.is_started:
-            raise WithingsException(*status.GAME_MUST_BE_STARTED)
-
-        if not self.mission_is_started:
+        if not self.state == STATE_MISSION_PENDING:
             raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
 
         if not p.is_member:
@@ -319,16 +309,13 @@ class Game():
 
 
     def assassinate(self, p, target):
-        if not self.is_started:
-            raise WithingsException(*status.GAME_MUST_BE_STARTED)
-
-        if not self.waiting_for_assassination:
+        if self.state != STATE_ASSASSIN:
             raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
 
         if not p.role == ASSASSIN or p.role == MORGANA:
             raise WithingsException(*status.INVALID_PARAMS)
 
-        self.waiting_for_assassination = False
+        self.state = STATE_GAME_FINISHED
         if self.players[target].role == MERLIN:
             self.good_wins = False
         else:
@@ -337,17 +324,29 @@ class Game():
         self._end()
 
 
+    def use_lady(self, p, target):
+        if self.state != STATE_LADY:
+            raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
+
+        if not p.has_lady:
+            raise WithingsException(*status.INVALID_PARAMS)
+
+        self.idx = (self.idx+1) % self.nplayers
+        self.turn += 1
+        self._start_new_turn()
+        return self.players[target] in [PEON, MERLIN, PERCI]
+
+
     def _start_new_turn(self):
         gs = self.game_setup
         self.mission_size = gs["missions"][self.turn]
         self.fails_required = gs["fails"][self.turn]
         self.imposition_in = gs["imposition_at"]
 
-        self.mission_is_proposed = False
-        self.mission_is_started = False
-
+        self.state = STATE_WAITING_FOR_MISSION
         self._reset_players()
 
+        # Lady of the lake must be distributed ?
         self.lady = len([res for res in self.mission_results if not res]) == 1 and gs["lady"]
 
 
@@ -374,11 +373,11 @@ class Game():
         votes_for = np.sum([p.vote for p in self.players])
         if votes_for > self.nplayers / 2.0:
             # Mission accepted
-            self.mission_is_started = True
+            self.state = STATE_MISSION_PENDING
         else:
             # Mission refused
             self._reset_players()
-            self.mission_is_proposed = False
+            self.state = STATE_WAITING_FOR_MISSION
             self.idx = (self.idx+1) % self.nplayers
             self.imposition_in -= 1
 
@@ -395,13 +394,15 @@ class Game():
         if fails >= self.fails_required:
             # Mission failed
             self.mission_results.append(False)
+            if self.lady:
+                self.state = STATE_LADY
         else:
             # Mission succeded
             self.mission_results.append(True)
 
         self._assess_game_end()
 
-        if not self.waiting_for_assassination:
+        if self.state not in [STATE_ASSASSIN, STATE_LADY]:
             self.idx = (self.idx+1) % self.nplayers
             self.turn += 1
             self._start_new_turn()
@@ -410,15 +411,16 @@ class Game():
     def _assess_game_end(self):
         if len([res for res in self.mission_results if res]) == 3:
             # Good wins !
-            self.waiting_for_assassination = True
+            self.state = STATE_ASSASSIN
 
         elif len([res for res in self.mission_results if not res]) == 3:
             # Evil wins :()
             self.good_wins = False
+            self.state = STATE_GAME_FINISHED
             self._end()
 
 
     def _end(self):
-        self.is_started = False
+        pass
 
 

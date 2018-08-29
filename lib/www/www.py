@@ -6,7 +6,7 @@ from flask import Flask, Response
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 from flask.ext.autodoc import Autodoc
-from flask import send_file
+from flask import send_file, url_for, redirect
 from lib.db import database
 from functools import wraps
 
@@ -40,7 +40,9 @@ def rollback_on_exception(func):
 @nocache
 @handle_exceptions
 def home():
-    return json_response({"status": 0, "body": "Avalon!"})
+    __dir__ = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join(__dir__, "static/index.html")
+    return redirect(url_for("static", filename="index.html"))
 
 """ Import routes """
 
