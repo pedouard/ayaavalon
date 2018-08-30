@@ -4,8 +4,8 @@ import random
 import json
 from datetime import datetime, timedelta
 
-from lib.db.database import Player, Game
 from lib.www import status
+from lib.db.database import Game as GameDatabase
 
 from withings.datascience.core.flask_utils import WithingsException
 
@@ -166,10 +166,15 @@ class Player():
 
 class Game():
 
+    @property
+    def __version__(self):
+        return 0
+
     def __init__(self, session):
         self.session = session
         self.players = []
         self.nplayers = 0
+        self.n_mission_before_imposition = None
 
         self.state = STATE_EMPTY
         self.turn = 0
@@ -187,7 +192,19 @@ class Game():
 
         self.good_wins = None
 
-    def dump(self, p):
+        self.game_log = {
+            'players': [],
+            'roles': [],
+
+            'host': [],
+            'game_setup': [],
+
+            'turn': [],
+            'good_wins': None,
+        }
+
+    def dump_state(self, p):
+        """ Dump game state for a player. """
         big_data = {
             "players": [p.dump() for p in self.players],
             "nplayers": self.nplayers,
@@ -212,6 +229,15 @@ class Game():
             big_data["self"] = p.format_info(self.players)
 
         return big_data
+
+
+    def dump_full_game(self):
+        """ Dump full game into a dict, must be called after game is finished. """
+
+        if self.state != STATE_GAME_FINISHED:
+            raise Exception('Game is not finished, cannot dump full infos.')
+
+        return self.game_log
 
 
     def add_player(self, p):
@@ -240,13 +266,19 @@ class Game():
             raise WithingsException(*status.NOT_ENOUGH_PLAYERS)
 
         self.game_setup = GAME_SETUPS[self.nplayers]
+        self.n_mission_before_imposition = self.game_setup['imposition_at']
 
         characters = self.game_setup["characters"]
         random.shuffle(characters)
         for i, p in enumerate(self.players):
             p.role = characters[i]
+            self.game_log['players'].append(p.userid)
+            self.game_log['roles'].append(p.role)
 
         self._start_new_turn()
+
+        self.game_log['game_setup'] = self.game_setup
+        self.game_log['host'] = p.userid
 
 
     def propose_mission(self, p, members, lady):
@@ -275,7 +307,24 @@ class Game():
         if self.imposition_in == 1:
             self.state = STATE_MISSION_PENDING
 
+        id_mission = self.n_mission_before_imposition - self.imposition_in
 
+        self.game_log['turn'][-1]['missions'].append({
+            'id_mission': id_mission,
+            'members': members,
+
+            'votes': [],
+            'accepted': -1,  # -1 imposed, 0 refused, 1 accepted
+
+            'who_failed': [],
+            'fails': None,
+            'success': None,
+
+            'has_lady': self.lady,
+            'lady': self.players[lady].userid if self.lady else -1,
+            'used_lady_on': None,
+            'lady_claimed_to_see': None,
+        })
 
     def vote(self, p, v):
         if not self.state == STATE_WAITING_FOR_VOTES:
@@ -316,8 +365,11 @@ class Game():
         self.state = STATE_GAME_FINISHED
         if self.players[target].role == MERLIN:
             self.good_wins = False
+            self.game_log['merlin_killed'] = 1
         else:
             self.good_wins = True
+            self.game_log['merlin_killed'] = 0
+        self.game_log['merlin_targeted'] = self.players[target].userid
 
         self._end()
 
@@ -328,6 +380,8 @@ class Game():
 
         if not p.has_lady:
             raise WithingsException(*status.INVALID_PARAMS)
+
+        self.game_log['turn'][-1]['missions'][-1]['used_lady_on'] = self.players[target].userid
 
         self.idx = (self.idx+1) % self.nplayers
         self.turn += 1
@@ -346,6 +400,8 @@ class Game():
 
         # Lady of the lake must be distributed ?
         self.lady = len([res for res in self.mission_results if not res]) == 1 and gs["lady"]
+
+        self.game_log['turn'].append({'missions': []})
 
 
     def _get_by_userid(self, userid):
@@ -372,12 +428,16 @@ class Game():
         if votes_for > self.nplayers / 2.0:
             # Mission accepted
             self.state = STATE_MISSION_PENDING
+            self.game_log['turn'][-1]['missions'][-1]['accepted'] = 1
         else:
             # Mission refused
             self._reset_players()
             self.state = STATE_WAITING_FOR_MISSION
             self.idx = (self.idx+1) % self.nplayers
             self.imposition_in -= 1
+            self.game_log['turn'][-1]['missions'][-1]['accepted'] = 0
+
+        self.game_log['turn'][-1]['missions'][-1]['votes'] = [p.has_voted for p in self.players]
 
 
     def _resolve_participations(self):
@@ -388,6 +448,10 @@ class Game():
         # All players have participated !
 
         fails = len([p.participation for p in self.players if p.is_member and not p.participation])
+        success = len([p.participation for p in self.players if p.is_member and p.participation])
+        self.game_log['turn'][-1]['missions'][-1]['fails'] = fails
+        self.game_log['turn'][-1]['missions'][-1]['success'] = success
+        self.game_log['turn'][-1]['missions'][-1]['who_failed'] = [p.userid for p in self.players if p.is_member and not p.participation]
 
         if fails >= self.fails_required:
             # Mission failed
@@ -419,4 +483,11 @@ class Game():
 
 
     def _end(self):
+        self.game_log['good_wins'] = self.good_wins
         self.is_started = False
+
+        d = self.dump_full_game()
+        v = self.__version__
+        self.session.add(GameDatabase(info=d, version=v))
+        self.session.flush()
+        print('added game record', d)

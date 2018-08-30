@@ -1,9 +1,8 @@
 import sqlalchemy as sa
 import sqlalchemy.ext.declarative
 
-from sqlalchemy import Column, Integer, String, Index, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.pool import NullPool
-from sqlalchemy.schema import ForeignKey
 from sqlalchemy.sql.expression import func
 
 from withings.datascience.core.sqlalchemy_utils import JSON
@@ -18,16 +17,21 @@ def info():
     db_uri = config.get(config_section, 'db_uri')
     return db_uri, Base.metadata
 
-def session():
+
+def create_session():
     """Return a scoped session.
     """
-    global _Session
+    global _Session, engine
     if _Session is None:
         db_uri, _ = info()
         engine = sa.create_engine(db_uri, poolclass=NullPool)
         _Session = sa.orm.scoped_session(sa.orm.sessionmaker(bind=engine))
     return _Session()
+
 _Session = None
+engine = None
+session = create_session()
+
 
 
 class Player(Base):
@@ -65,5 +69,6 @@ class Game(Base):
     created_game = Column(DateTime, default=func.now(), nullable=False)
     modified_game = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
-    def __init__(self, info):
+    def __init__(self, info, version):
         self.info_game = info
+        self.version_game = version

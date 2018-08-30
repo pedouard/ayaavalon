@@ -32,7 +32,7 @@ def get_game_state(userid):
     p = g._get_by_userid(userid)
     return json_response({
         'status': status.OK,
-        'body': g.dump(p)
+        'body': g.dump_state(p)
         })
 
 

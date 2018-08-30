@@ -8,6 +8,7 @@ from webargs.flaskparser import use_kwargs
 from flask_autodoc import Autodoc
 from flask import send_file, url_for, redirect
 from lib.db import database
+from lib.db.database import session
 from functools import wraps
 
 from withings.datascience.core.flask_utils import init_statsd, nocache, \
@@ -23,7 +24,6 @@ app.errorhandler(422)(handle_bad_request)
 app.errorhandler(500)(handle_bad_request)
 init_statsd(app)
 
-session = database.session()
 
 def rollback_on_exception(func):
     @wraps(func)
@@ -66,3 +66,4 @@ def image_get(name):
 
 import lib.www.player
 import lib.www.game
+import lib.www.stats

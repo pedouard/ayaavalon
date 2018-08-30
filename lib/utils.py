@@ -53,6 +53,8 @@ def format_player(player):
     }
 
 def truncate_all_tables(session):
-    session.query(Player).delete()
-    session.query(Game).delete()
+    n = session.query(Game).delete()
+    print('deleted {} game records'.format(n))
+    n = session.query(Player).delete()
+    print('deleted {} player records'.format(n))
     session.commit()
