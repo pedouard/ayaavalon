@@ -1,21 +1,16 @@
 # -*- coding: UTF-8 -*
 
-import os
 import json
-import time
-from flask import Flask, Response
-from webargs import fields
-from webargs.flaskparser import use_kwargs
 from datetime import datetime, date
 
-from lib import utils, game
-from lib.db.database import Game
-from withings.datascience.core.flask_utils import init_statsd, nocache, \
-    handle_bad_request, handle_exceptions, WithingsException
+from flask import Response
+from withings.datascience.core.flask_utils import nocache, \
+    handle_exceptions
 
 import lib.www.status as status
-from lib.www.www import app, session, auto, rollback_on_exception
+from lib.db.database import Game
 from lib.www.game import format_game
+from lib.www.www import app, session
 
 
 # TODO use this json_response everywhere

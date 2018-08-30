@@ -1,21 +1,16 @@
 # -*- coding: UTF-8 -*
 
 import os
-import random
-from flask import Flask, Response
-from webargs import fields
-from webargs.flaskparser import use_kwargs
-from flask_autodoc import Autodoc
-from flask import send_file, url_for, redirect
-from lib.db import database
-from lib.db.database import session
 from functools import wraps
 
+from flask import Flask, send_file, url_for, redirect
+from flask_autodoc import Autodoc
+from webargs import fields
+from webargs.flaskparser import use_kwargs
 from withings.datascience.core.flask_utils import init_statsd, nocache, \
-    handle_bad_request, handle_exceptions, json_response, WithingsException
-from withings.datascience.core import config
+    handle_bad_request, handle_exceptions
 
-import lib.www.status as status
+from lib.db.database import session
 
 app = Flask(__name__)
 auto = Autodoc(app)

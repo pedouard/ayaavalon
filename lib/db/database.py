@@ -1,15 +1,14 @@
 import sqlalchemy as sa
 import sqlalchemy.ext.declarative
-
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql.expression import func
-
-from withings.datascience.core.sqlalchemy_utils import JSON
 from withings.datascience.core import config
+from withings.datascience.core.sqlalchemy_utils import JSON
 
 Base = sa.ext.declarative.declarative_base()
 config_section = 'ayaavalon'
+
 
 def info():
     """Called by alembic/env.py
@@ -31,7 +30,6 @@ def create_session():
 _Session = None
 engine = None
 session = create_session()
-
 
 
 class Player(Base):

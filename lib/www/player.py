@@ -1,19 +1,17 @@
 # -*- coding: UTF-8 -*
 
-import os
 import json
-import time
-from flask import Flask, Response
+
 from webargs import fields
 from webargs.flaskparser import use_kwargs
-from datetime import datetime
-
-from lib import utils
-from lib.db.database import Player, Game
-from withings.datascience.core.flask_utils import nocache, handle_exceptions, json_response, WithingsException
+from withings.datascience.core.flask_utils import nocache, handle_exceptions, json_response, \
+    WithingsException
 
 import lib.www.status as status
+from lib import utils
+from lib.db.database import Player
 from lib.www.www import app, session, auto, rollback_on_exception
+
 
 @auto.doc()
 @app.route("/player_get")

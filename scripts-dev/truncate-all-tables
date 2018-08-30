@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 import env
 
-from lib.db import database
 from lib import utils
+from lib.db import database
 
 session = database.session()
 utils.truncate_all_tables(session)
-print "Success!"
+print("Success!")
 

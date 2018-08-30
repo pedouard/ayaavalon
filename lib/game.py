@@ -1,14 +1,10 @@
 # -*- coding: UTF-8 -*
-import time
 import random
-import json
-from datetime import datetime, timedelta
-
-from lib.www import status
-from lib.db.database import Game as GameDatabase
 
 from withings.datascience.core.flask_utils import WithingsException
 
+from lib.db.database import Game as GameDatabase
+from lib.www import status
 
 MERLIN = 0
 PERCI = 1
