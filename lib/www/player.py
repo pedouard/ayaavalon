@@ -12,8 +12,8 @@ from lib import utils
 from lib.db.database import Player, Game
 from withings.datascience.core.flask_utils import nocache, handle_exceptions, json_response, WithingsException
 
-import status
-from www import app, session, auto, rollback_on_exception
+import lib.www.status as status
+from lib.www.www import app, session, auto, rollback_on_exception
 
 @auto.doc()
 @app.route("/player_get")

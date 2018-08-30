@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+import sqlalchemy.ext.declarative
 
 from sqlalchemy import Column, Integer, String, Index, DateTime, Boolean
 from sqlalchemy.pool import NullPool
@@ -66,4 +67,3 @@ class Game(Base):
 
     def __init__(self, info):
         self.info_game = info
-

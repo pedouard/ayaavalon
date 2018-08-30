@@ -13,8 +13,8 @@ from lib.db.database import Player, Game
 from withings.datascience.core.flask_utils import init_statsd, nocache, \
     handle_bad_request, handle_exceptions, json_response, WithingsException
 
-import status
-from www import app, session, auto, rollback_on_exception
+import lib.www.status as status
+from lib.www.www import app, session, auto, rollback_on_exception
 
 g = game.Game(session)
 
@@ -212,5 +212,3 @@ def format_game(g_):
         "created": g_.created_game,
         "modified": g_.modified_game,
     }
-
-

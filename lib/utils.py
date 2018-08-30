@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from withings.datascience.core import config
 from lib.db.database import Player, Game
-from www import status
+from .www import status
 
 """
 def format_contract(c, session):
@@ -56,4 +56,3 @@ def truncate_all_tables(session):
     session.query(Player).delete()
     session.query(Game).delete()
     session.commit()
-

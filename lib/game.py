@@ -2,12 +2,10 @@
 import time
 import random
 import json
-import numpy as np
 from datetime import datetime, timedelta
 
-from withings.datascience.core import config
 from lib.db.database import Player, Game
-from www import status
+from lib.www import status
 
 from withings.datascience.core.flask_utils import WithingsException
 
@@ -261,7 +259,7 @@ class Game():
         if len(members) != self.mission_size:
             raise WithingsException(*status.WRONG_MISSION_SIZE)
 
-        if np.max(members) > self.nplayers - 1 or np.min(members) < 0 or len(members) != len(set(members)):
+        if max(members) > self.nplayers - 1 or min(members) < 0 or len(members) != len(set(members)):
             raise WithingsException(*status.INVALID_PARAMS)
 
         if self.lady and (lady < 0 or lady > len(members) or self.players[lady].userid == p.userid):
@@ -370,7 +368,7 @@ class Game():
 
         # All players have voted !
 
-        votes_for = np.sum([p.vote for p in self.players])
+        votes_for = sum([p.vote for p in self.players])
         if votes_for > self.nplayers / 2.0:
             # Mission accepted
             self.state = STATE_MISSION_PENDING
@@ -421,6 +419,4 @@ class Game():
 
 
     def _end(self):
-        pass
-
-
+        self.is_started = False

@@ -5,7 +5,7 @@ import random
 from flask import Flask, Response
 from webargs import fields
 from webargs.flaskparser import use_kwargs
-from flask.ext.autodoc import Autodoc
+from flask_autodoc import Autodoc
 from flask import send_file, url_for, redirect
 from lib.db import database
 from functools import wraps
@@ -14,7 +14,7 @@ from withings.datascience.core.flask_utils import init_statsd, nocache, \
     handle_bad_request, handle_exceptions, json_response, WithingsException
 from withings.datascience.core import config
 
-import status
+import lib.www.status as status
 
 app = Flask(__name__)
 auto = Autodoc(app)
@@ -30,7 +30,7 @@ def rollback_on_exception(func):
     def dec(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except Exception, e:
+        except Exception:
             session.rollback()
             raise
     return dec
@@ -64,4 +64,5 @@ def image_get(name):
     path = os.path.join(__dir__, name)
     return send_file(path, mimetype='image/png')
 
-import player, game
+import lib.www.player
+import lib.www.game
