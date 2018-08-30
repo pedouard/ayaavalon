@@ -44,7 +44,7 @@ GAME_SETUPS = {
     5: {
         "missions": [2, 3, 2, 3, 3],
         "fails": [1, 1, 1, 1, 1],
-        "imposition_at": 5,
+        "imposition_at": 4,
         "lady": False,
         "characters": [MERLIN, PERCI, PEON, MORDRED, MORGANA]
     },
@@ -332,7 +332,7 @@ class Game():
         self.idx = (self.idx+1) % self.nplayers
         self.turn += 1
         self._start_new_turn()
-        return self.players[target] in [PEON, MERLIN, PERCI]
+        return self.players[target].role in [PEON, MERLIN, PERCI]
 
 
     def _start_new_turn(self):
