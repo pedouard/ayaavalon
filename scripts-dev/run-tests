@@ -338,14 +338,20 @@ status, body = call("/propose_mission", userid=107, members=[0, 1, 2, 3, 4], lad
 check_status(status, body, WRONG_TIME_FOR_ACTION[0])
 
 print("Stats")
-status, body = call("/stats/games")
+status, body = call("/games")
 check_status(status, body, 0)
 check_equal(body["n_game"], 1)
 id_ = body['games'][0]['id']
 
-status, body = call("/stats/games/{}".format(id_))
+status, body = call("/games/{}".format(id_))
 check_status(status, body, 0)
 r = body['data']
-print(r)
+# print(r)
 s = body['stats']
-print(s)
+# print(s)
+
+status, body = call("/stats")
+check_status(status, body, 0)
+check_equal(body["n_game"], 1)
+check_equal(body["n_good_wins"], 1)
+check_equal(body["n_evil_wins"], 0)

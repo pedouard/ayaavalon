@@ -38,7 +38,7 @@ def format_game(g_, stats=None):
     return d
 
 
-@app.route("/stats/games")
+@app.route("/games")
 @nocache
 @handle_exceptions
 def get_list_games():
@@ -54,7 +54,7 @@ def get_list_games():
     })
 
 
-@app.route("/stats/games/<id>")
+@app.route("/games/<id>")
 @nocache
 @handle_exceptions
 def get_game(id):
@@ -65,3 +65,38 @@ def get_game(id):
         'status': status.OK,
         'body': format_game(game, game_stats),
     })
+
+
+@app.route("/stats")
+@nocache
+@handle_exceptions
+def get_stats():
+
+    gs = session.query(GameStats)
+    n_game = gs.count()
+    n_good_wins = gs.filter(GameStats.good_wins).count()
+
+    stats = {
+        'n_game': n_game,
+        'n_evil_wins': n_game - n_good_wins,
+        'n_good_wins': n_good_wins,
+        'r_evil_wins': (n_game - n_good_wins) / n_game,
+        'r_good_wins': n_good_wins / n_game,
+    }
+    print('toot', stats)
+
+    # ideas of badges / achievements
+
+    # hidden merlin :
+    # 1 point for voting for a known evil guy as merlin
+    # 3 point for putting for a known evil guy as merlin
+    # mean over game where the player is merlin
+
+    # i'm not that guy :
+    # most lady of the lake verified galahad
+
+    return json_response({
+        'status': status.OK,
+        'body': stats,
+    })
+
