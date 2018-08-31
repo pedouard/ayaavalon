@@ -1,20 +1,16 @@
 # -*- coding: UTF-8 -*
 
-import os
 import json
-import time
-from flask import Flask, Response
+
 from webargs import fields
 from webargs.flaskparser import use_kwargs
-from datetime import datetime
-
-from lib import utils, game
-from lib.db.database import Player, Game
-from withings.datascience.core.flask_utils import init_statsd, nocache, \
-    handle_bad_request, handle_exceptions, json_response, WithingsException
+from withings.datascience.core.flask_utils import nocache, \
+    handle_exceptions, json_response, WithingsException
 
 import lib.www.status as status
-from lib.www.www import app, session, auto, rollback_on_exception
+from lib import game
+from lib.db.database import Player
+from lib.www.www import app, session
 
 g = game.Game(session)
 
@@ -29,7 +25,7 @@ def get_game_state(userid):
     if player is None:
         raise WithingsException(*status.USER_NOT_FOUND)
 
-    p = g._get_by_userid(userid)
+    p = g._get_by_id_player(player.id_player)
     return json_response({
         'status': status.OK,
         'body': g.dump_state(p)
@@ -62,7 +58,8 @@ def join_game(userid):
 })
 @handle_exceptions
 def start_game(userid):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
     g.start(p)
     return json_response({
         'status': status.OK,
@@ -83,18 +80,18 @@ def abort_game():
         })
 
 
-@app.route("/reorder_players")
-@nocache
-@use_kwargs({
-    'userid': fields.Int(required=True),
-})
-@handle_exceptions
-def reorder_players(userid):
-    # TODO
-    return json_response({
-        'status': status.OK,
-        'body': "Ok!"
-        })
+# @app.route("/reorder_players")
+# @nocache
+# @use_kwargs({
+#     'userid': fields.Int(required=True),
+# })
+# @handle_exceptions
+# def reorder_players(userid):
+#     # TODO
+#     return json_response({
+#         'status': status.OK,
+#         'body': "Ok!"
+#         })
 
 
 @app.route("/propose_mission")
@@ -106,7 +103,8 @@ def reorder_players(userid):
 })
 @handle_exceptions
 def propose_mission(userid, members, lady=0):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
     members = json.loads(members)
     g.propose_mission(p, members, lady)
 
@@ -123,7 +121,8 @@ def propose_mission(userid, members, lady=0):
 })
 @handle_exceptions
 def vote(userid, v):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
     g.vote(p, v)
 
     return json_response({
@@ -139,7 +138,8 @@ def vote(userid, v):
 })
 @handle_exceptions
 def do_mission(userid, v):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
     g.do_mission(p, v)
 
     return json_response({
@@ -155,9 +155,11 @@ def do_mission(userid, v):
     'target': fields.Int(required=True),
 })
 @handle_exceptions
-    # TODO
+# TODO can kill merlin even if evil won
+# TODO cannot kill yourself or a an evil guy
 def kill_merlin(userid, target):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
     g.assassinate(p, target)
 
     return json_response({
@@ -174,41 +176,31 @@ def kill_merlin(userid, target):
 @handle_exceptions
     # TODO
 def use_lady(userid, target):
-    p = check_player(userid)
+    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
+    p = check_player(id_player)
 
     return json_response({
         'status': status.OK,
         'body': g.use_lady(p, target)
         })
 
+
 @app.route("/dump_database")
 @nocache
 @use_kwargs({})
 @handle_exceptions
 def dump_database():
-    return json_response({
-        'status': status.OK,
-        'body': [format_game(g_) for g_ in session.query(Game).all()]
-        })
+    raise DeprecationWarning('Use /stats/games/<id> instead')
 
 
-def check_player(userid):
-    player = session.query(Player).filter_by(userid_player=userid).first()
+#TODO refacto : get id_player from session_id, and check_player in a decorator
+def check_player(id_player):
+    player = session.query(Player).filter_by(id_player=id_player).first()
     if player is None:
         raise WithingsException(*status.USER_NOT_FOUND)
 
-    p = g._get_by_userid(userid)
+    p = g._get_by_id_player(id_player)
     if not p:
         raise WithingsException(*status.NOT_IN_THE_GAME)
 
     return p
-
-
-def format_game(g_):
-    return {
-        "id": g_.id_game,
-        "version": g_.version_game,
-        "data": g_.info_game,
-        "created": g_.created_game,
-        "modified": g_.modified_game,
-    }

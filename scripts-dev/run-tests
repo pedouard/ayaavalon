@@ -347,3 +347,5 @@ status, body = call("/stats/games/{}".format(id_))
 check_status(status, body, 0)
 r = body['data']
 print(r)
+s = body['stats']
+print(s)
