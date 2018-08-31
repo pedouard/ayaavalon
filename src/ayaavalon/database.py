@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import func
 from withings.datascience.core import config
 from withings.datascience.core.sqlalchemy_utils import JSON
 from sqlalchemy.schema import ForeignKey
-from lib.constants import *
+from ayaavalon.constants import *
 
 
 Base = sa.ext.declarative.declarative_base()
@@ -132,3 +132,34 @@ class GameStats(Base):
         )
 
         return gs
+
+# def update_rankings():
+#     ps = PlayerStats.objects
+#
+#     ratings = {tri[0]: trueskill.Rating() for tri in Player.objects.values_list('tri')}
+#     ratings['EVI'] = trueskill.Rating(55)
+#     ratings['GOO'] = trueskill.Rating(-5)
+#     for game in GameStats.objects.all().order_by('game__date'):
+#         evil_tri = game.evil_team_tri + ',EVI'
+#         good_tri = game.good_team_tri + ',GOO'
+#         evil_team = [ratings[tri] for tri in evil_tri.split(',')]
+#         good_team = [ratings[tri] for tri in good_tri.split(',')]
+#         rank = int(game.good_win)
+#         # lower rank is better
+#         new_evil_rating, new_good_rating = trueskill.rate([evil_team, good_team], ranks=[rank, 1-rank])
+#         for new_rating, trigram in zip(new_evil_rating, evil_tri.split(',')):
+#             ratings[trigram] = new_rating
+#         for new_rating, trigram in zip(new_good_rating, good_tri.split(',')):
+#             ratings[trigram] = new_rating
+#
+#     for tri, rating in ratings.items():
+#         ps.filter(player__tri=tri).update(ranking_trueskill=float(rating))
+#
+#     # dummy player objects
+#     Player.objects.get_or_create(tri='EVI')
+#     Player.objects.get_or_create(tri='GOO')
+#     player, created = Player.objects.update_or_create(tri='EVI', defaults={'stats__ranking_trueskill': float(ratings['EVI'])})
+#     player, created = Player.objects.update_or_create(tri='GOO', defaults={'stats__ranking_trueskill': float(ratings['GOO'])})
+#
+#     print('Evil ranking:', ratings['EVI'])
+#     print('Good ranking:', ratings['GOO'])

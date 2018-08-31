@@ -4,19 +4,21 @@
 # Modify only if you know what you're doing!
 
 from __future__ import with_statement
-from alembic import context
-from sqlalchemy import engine_from_config, pool
+
 from logging.config import fileConfig
 
+from alembic import context
+from sqlalchemy import engine_from_config, pool
+
+from ayaavalon import database
+
 # Setup sys.path and load withings.datascience.core.config
-from os.path import dirname, realpath, join;
-import runpy; runpy.run_path(join(dirname(realpath(__file__)), '..', 'scripts', 'env.py'))
-import lib.db.database
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-db_uri, metadata = lib.db.database.info()
+db_uri, metadata = database.info()
 config.set_main_option("sqlalchemy.url", db_uri)
 
 # Interpret the config file for Python logging.
@@ -26,6 +28,7 @@ fileConfig(config.config_file_name)
 # add your model's MetaData object here
 # for 'autogenerate' support
 target_metadata = metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -74,6 +77,7 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

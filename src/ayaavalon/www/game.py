@@ -7,12 +7,15 @@ from webargs.flaskparser import use_kwargs
 from withings.datascience.core.flask_utils import nocache, \
     handle_exceptions, json_response, WithingsException
 
-import lib.www.status as status
-from lib import game
-from lib.db.database import Player
-from lib.www.www import app, session
+from ayaavalon.www import status
+from ayaavalon import game
+from ayaavalon.database import Player
+
+from ayaavalon.database import session
+from ayaavalon.www import app
 
 g = game.Game(session)
+
 
 @app.route("/get_game_state")
 @nocache

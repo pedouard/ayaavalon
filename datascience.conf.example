@@ -1,50 +1,30 @@
+# Copy this file with :
+#   cp datascience.conf.example datascience.conf
+# And adapt it to your local environment.
+
+# Test configuration should be added here directly, only the sections with the
+# prefix "test:" will be taken into account. Running the tests with the
+# following example will remove "parameter" and only "db" will be present with
+# the value "test database".
+
+# Parameters which should be changed by a new developper should be like :
+# <NAME>
+# Ideally with a comprehensive name, so that it may be replaced with a simple
+# find & replace on any text editor or with grep & sed.
+
 [ayaavalon]
-db_uri=postgresql://postgres:pass@localhost:5432/example
-test_db_uri=postgresql://postgres:pass@localhost:5432/test_example
-foo=bar
+db_host = localhost
+db_port = 5432
+db_name = database
+db_user = <LDAP_USER>
+db_password = <LDAP_PASSWORD>
+db_uri = postgresql://%(db_user)s:%(db_password)s@%(db_host)s:%(db_port)s/%(db_name)s
+parameter = 42
 
-# --------------- #
-#                 #
-#     Logging     #
-#                 #
-# --------------- #
-
-[loggers]
-keys=root, withings
-
-[handlers]
-keys=stream, syslog, email
-
-[formatters]
-keys=form0
-
-[logger_root]
-level=DEBUG
-handlers=stream
-
-[logger_withings]
-level=DEBUG
-handlers=
-qualname=withings
-formatter=form0
-
-[handler_stream]
-class=StreamHandler
-args=()
-level=DEBUG
-formatter=form0
-
-[handler_syslog]
-class=handlers.SysLogHandler
-args=('/dev/log', 'local0')
-level=INFO
-formatter=form0
-
-[handler_email]
-class=handlers.SMTPHandler
-level=CRITICAL
-args=('mta.withings.local', 'datascience+logger-dev@withings.com', ['datascience@withings.com'], '[LOG][dev][datascience] Error')
-formatter=form0
-
-[formatter_form0]
-format= %(module)s - %(asctime)s - %(levelname)s - %(message).1000s
+[test:ayaavalon]
+db_host = localhost
+db_port = 5432
+db_name = test_database
+db_user = <LDAP_USER>
+db_password = <LDAP_PASSWORD>
+db_uri = postgresql://%(db_user)s:%(db_password)s@%(db_host)s:%(db_port)s/%(db_name)s

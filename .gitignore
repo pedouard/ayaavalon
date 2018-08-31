@@ -6,3 +6,9 @@ venv/
 lib/www/deploy_grp_list
 lib/www/kills
 lib/www/notifs
+.idea/
+.tox
+old/
+.pytest*
+htmlcov/
+src/ayaavalon.egg*

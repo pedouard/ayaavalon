@@ -7,9 +7,11 @@ from flask import Response
 from withings.datascience.core.flask_utils import nocache, \
     handle_exceptions
 
-import lib.www.status as status
-from lib.db.database import Game, GameStats
-from lib.www.www import app, session
+from ayaavalon.www import status
+from ayaavalon.database import Game, GameStats
+
+from ayaavalon.database import session
+from ayaavalon.www import app
 
 
 # TODO use this json_response everywhere

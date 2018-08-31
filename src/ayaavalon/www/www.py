@@ -10,14 +10,9 @@ from webargs.flaskparser import use_kwargs
 from withings.datascience.core.flask_utils import init_statsd, nocache, \
     handle_bad_request, handle_exceptions
 
-from lib.db.database import session
+from ayaavalon.database import session
+from ayaavalon.www import app, auto
 
-app = Flask(__name__)
-auto = Autodoc(app)
-app.errorhandler(404)(handle_bad_request)
-app.errorhandler(422)(handle_bad_request)
-app.errorhandler(500)(handle_bad_request)
-init_statsd(app)
 
 
 def rollback_on_exception(func):
@@ -59,6 +54,3 @@ def image_get(name):
     path = os.path.join(__dir__, name)
     return send_file(path, mimetype='image/png')
 
-import lib.www.player
-import lib.www.game
-import lib.www.stats

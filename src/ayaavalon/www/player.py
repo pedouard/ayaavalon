@@ -7,10 +7,13 @@ from webargs.flaskparser import use_kwargs
 from withings.datascience.core.flask_utils import nocache, handle_exceptions, json_response, \
     WithingsException
 
-import lib.www.status as status
-from lib import utils
-from lib.db.database import Player
-from lib.www.www import app, session, auto, rollback_on_exception
+from ayaavalon.www import status
+from ayaavalon import utils
+from ayaavalon.database import Player
+
+from ayaavalon.database import session
+from ayaavalon.www import app, auto
+from ayaavalon.www.www import rollback_on_exception
 
 
 @auto.doc()

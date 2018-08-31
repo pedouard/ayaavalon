@@ -3,10 +3,10 @@ import random
 
 from withings.datascience.core.flask_utils import WithingsException
 
-from lib.db.database import Game as GameDatabase
-from lib.db.database import GameStats
-from lib.www import status
-from lib.constants import *
+from ayaavalon.database import Game as GameDatabase
+from ayaavalon.database import GameStats
+from ayaavalon.www import status
+from ayaavalon.constants import *
 
 
 # TODO implement Galahad
