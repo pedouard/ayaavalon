@@ -4,15 +4,16 @@
 import requests
 import json
 from datetime import datetime
+import time
 
 from ayaavalon import utils, game
 from ayaavalon.utils import ayaavalon_app
 from ayaavalon.www.status import *
-from ayaavalon.database import create_session
-
+from ayaavalon.database import session
 now = datetime.now()
 
 def call(route, **kwargs):
+    time.sleep(0.3)
 
     print("Calling:", route)
     kwargs = {k:str(v) for k,v in kwargs.items()}
@@ -41,7 +42,6 @@ def check_equal(value, target):
     print("Ok")
 
 
-session = create_session()
 utils.truncate_all_tables(session)
 
 status, body = call("/abort_game")

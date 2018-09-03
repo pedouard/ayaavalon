@@ -38,3 +38,82 @@ html, body {
     background: #428bca;
     border: 1px solid #4886bb;
 }
+
+.loader {
+    border: 6px solid #8a8686;
+    border-top: 6px solid #d48f11;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#main-loader {
+    margin: 0 auto;
+    position: relative;
+    top: 42%;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    background: #1d1c1c;
+    border-top: 1px solid #504e4c;
+}
+
+#footer .mission-result {
+    display: inline-block;
+    width: 18%;
+    height: 50px;
+    line-height: 50px;
+}
+
+#footer .mission-circle {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin-top: 8px;
+    border-radius: 20px;
+    background: #2b2a2a;
+}
+
+
+#footer .mission-circle.fail {
+    background: #942418;
+    border: 1px solid #c32c1d;
+}
+
+#footer .mission-circle.success {
+    background: #1c5f21;
+    border: 1px solid #0b6d17;
+}
+
+#header {
+    height: 60px;
+    line-height: 60px;
+    font-weight: 500;
+    margin: 0;
+    background: #1d1d1d;
+    border-bottom: 1px solid #4f4e4b
+}
+
+#header-title {
+    height: 60px;
+    line-height: 60px;
+    font-weight: 500;
+    margin: 0;
+    font-weight: bold;
+    font-size: 23px;
+    text-align: center;
+    color: #7f7c79;
+}
+

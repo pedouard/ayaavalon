@@ -24,11 +24,36 @@
     <script src="js/jquery-ui.min.js"></script>
     <script src="js/utils.js?1"></script>
     <script src="js/app.js?1"></script>
+    <script src="js/states.js?1"></script>
 
   </head>
   <body>
 
-    Game state: <div id="game-state"></div>
+    <div id="header">
+      <h5 id="header-title">Loading...</h5>
+    </div>
+
+
+    <div id="main-loader" class="loader"></div>
+
+    <div id="states-content" style="display: none;">
+      <div id="content-state-empty" style="display: none;">STATE_EMPTY</div >
+      <div id="content-state-not_started" style="display: none;">STATE_NOT_STARTED</div >
+      <div id="content-state-waiting-for-mission" style="display: none;">STATE_WAITING_FOR_MISSION</div >
+      <div id="content-state-waiting-for-votes" style="display: none;">STATE_WAITING_FOR_VOTES</div >
+      <div id="content-state-mission-pending" style="display: none;">STATE_MISSION_PENDING</div >
+      <div id="content-state-lady" style="display: none;">STATE_LADY</div >
+      <div id="content-state-assassin" style="display: none;">STATE_ASSASSIN</div >
+      <div id="content-state-game-finished" style="display: none;">STATE_GAME_FINISHED</div >
+    </div>
+
+    <div id="footer">
+      <div class="mission-result"><div class="mission-circle"></div></div>
+      <div class="mission-result"><div class="mission-circle"></div></div>
+      <div class="mission-result"><div class="mission-circle"></div></div>
+      <div class="mission-result"><div class="mission-circle"></div></div>
+      <div class="mission-result"><div class="mission-circle"></div></div>
+    </div>
 
     <div id="ws-error-box">
       <b>Webservice error: </b><span class="ws-error-text"></span>
