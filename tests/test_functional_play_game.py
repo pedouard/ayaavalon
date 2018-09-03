@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from ayaavalon import utils, game
+from ayaavalon.utils import ayaavalon_app
+from ayaavalon.www.status import *
+
 import requests
 import json
 import sys
 
 from datetime import datetime
 
-from ayaavalon import utils, game
-from ayaavalon.utils import ayaavalon_app
-from ayaavalon.www.status import *
 from .utils import reset_db
 from ayaavalon.database import create_session, engine
 

@@ -3,7 +3,7 @@
 
 import env
 from withings.datascience.core import setup_logging
-from lib.www.www import app
+from ayaavalon.www.www import app
 
 setup_logging('ws.datascience.ayaavalon')
 
