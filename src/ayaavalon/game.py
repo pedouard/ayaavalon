@@ -13,7 +13,7 @@ from ayaavalon.constants import *
 class Player():
 
     def __init__(self, p, is_host):
-        self.id_player = p.id_player
+        self.userid = p.userid_player
         self.is_host = is_host
         self.role = None
 
@@ -39,7 +39,7 @@ class Player():
 
     def dump(self):
         return {
-            "id_player": self.id_player,
+            "userid": self.userid,
             "is_host": self.is_host,
             "is_member": self.is_member,
             "has_voted": self.has_voted,
@@ -159,7 +159,7 @@ class Game():
         if self.state not in [STATE_EMPTY, STATE_NOT_STARTED]:
             raise WithingsException(*status.GAME_IS_STARTED)
 
-        if self._get_by_id_player(p.id_player):
+        if self._get_by_userid(p.userid_player):
             raise WithingsException(*status.ALREADY_IN_THE_GAME)
 
         if self.nplayers == 10:
@@ -187,20 +187,20 @@ class Game():
         random.shuffle(characters)
         for i, p in enumerate(self.players):
             p.role = characters[i]
-            self.game_log['players'].append(p.id_player)
+            self.game_log['players'].append(p.userid)
             self.game_log['roles'].append(p.role)
 
         self._start_new_turn()
 
         self.game_log['game_setup'] = self.game_setup
-        self.game_log['host'] = p.id_player
+        self.game_log['host'] = p.userid
 
 
     def propose_mission(self, p, members, lady):
         if self.state != STATE_WAITING_FOR_MISSION:
             raise WithingsException(*status.WRONG_TIME_FOR_ACTION)
 
-        if self.players[self.idx].id_player != p.id_player:
+        if self.players[self.idx].userid != p.userid:
             raise WithingsException(*status.MUST_BE_LEADER)
 
         if len(members) != self.mission_size:
@@ -209,7 +209,7 @@ class Game():
         if max(members) > self.nplayers - 1 or min(members) < 0 or len(members) != len(set(members)):
             raise WithingsException(*status.INVALID_PARAMS)
 
-        if self.lady and (lady < 0 or lady > len(members) or self.players[lady].id_player == p.id_player):
+        if self.lady and (lady < 0 or lady > len(members) or self.players[lady].userid == p.userid):
             raise WithingsException(*status.INVALID_PARAMS)
 
         self.state = STATE_WAITING_FOR_VOTES
@@ -226,7 +226,7 @@ class Game():
 
         self.game_log['turn'][-1]['missions'].append({
             'id_mission': id_mission,
-            'arthur': p.id_player,
+            'arthur': p.userid,
             'members': members,
 
             'votes': [],
@@ -237,7 +237,7 @@ class Game():
             'success': None,
 
             'has_lady': self.lady,
-            'lady': self.players[lady].id_player if self.lady else -1,
+            'lady': self.players[lady].userid if self.lady else -1,
             'used_lady_on': None,
             'lady_claimed_to_see': None,
         })
@@ -285,7 +285,7 @@ class Game():
         else:
             self.good_wins = True
             self.game_log['merlin_killed'] = 0
-        self.game_log['merlin_targeted'] = self.players[target].id_player
+        self.game_log['merlin_targeted'] = self.players[target].userid
 
         self._end()
 
@@ -297,7 +297,7 @@ class Game():
         if not p.has_lady:
             raise WithingsException(*status.INVALID_PARAMS)
 
-        self.game_log['turn'][-1]['missions'][-1]['used_lady_on'] = self.players[target].id_player
+        self.game_log['turn'][-1]['missions'][-1]['used_lady_on'] = self.players[target].userid
 
         self.idx = (self.idx+1) % self.nplayers
         self.turn += 1
@@ -320,9 +320,9 @@ class Game():
         self.game_log['turn'].append({'missions': []})
 
 
-    def _get_by_id_player(self, id_player):
+    def _get_by_userid(self, userid):
         for p in self.players:
-            if id_player == p.id_player:
+            if userid == p.userid:
                 return p
 
         return False
@@ -367,7 +367,7 @@ class Game():
         success = len([p.participation for p in self.players if p.is_member and p.participation])
         self.game_log['turn'][-1]['missions'][-1]['fails'] = fails
         self.game_log['turn'][-1]['missions'][-1]['success'] = success
-        self.game_log['turn'][-1]['missions'][-1]['who_failed'] = [p.id_player for p in self.players if p.is_member and not p.participation]
+        self.game_log['turn'][-1]['missions'][-1]['who_failed'] = [p.userid for p in self.players if p.is_member and not p.participation]
 
         if fails >= self.fails_required:
             # Mission failed

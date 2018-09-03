@@ -6,6 +6,7 @@ from sqlalchemy.sql.expression import func
 from withings.datascience.core import config
 from withings.datascience.core.sqlalchemy_utils import JSON
 from sqlalchemy.schema import ForeignKey
+
 from ayaavalon.constants import *
 
 
@@ -81,20 +82,20 @@ class GameStats(Base):
     id_gamestats = Column(Integer, primary_key=True)
 
     id_game = Column(Integer, ForeignKey('game.id_game'))
-    host = Column(Integer, ForeignKey('player.id_player'))
+    host = Column(Integer, ForeignKey('player.userid_player'))
     n_players = Column(Integer)
 
     good_wins = Column(Boolean, nullable=False)
     merlin_killed = Column(Boolean)
-    merlin_targeted = Column(Integer, ForeignKey('player.id_player'))
+    merlin_targeted = Column(Integer, ForeignKey('player.userid_player'))
 
-    merlin = Column(Integer, ForeignKey('player.id_player'))
-    perceval = Column(Integer, ForeignKey('player.id_player'))
-    galahad = Column(Integer, ForeignKey('player.id_player'))
-    mordred = Column(Integer, ForeignKey('player.id_player'))
-    morgana = Column(Integer, ForeignKey('player.id_player'))
-    oberon = Column(Integer, ForeignKey('player.id_player'))
-    assassin = Column(Integer, ForeignKey('player.id_player'))
+    merlin = Column(Integer, ForeignKey('player.userid_player'))
+    perceval = Column(Integer, ForeignKey('player.userid_player'))
+    galahad = Column(Integer, ForeignKey('player.userid_player'))
+    mordred = Column(Integer, ForeignKey('player.userid_player'))
+    morgana = Column(Integer, ForeignKey('player.userid_player'))
+    oberon = Column(Integer, ForeignKey('player.userid_player'))
+    assassin = Column(Integer, ForeignKey('player.userid_player'))
 
     @staticmethod
     def from_game(game):

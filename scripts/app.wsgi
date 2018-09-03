@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import env
 from withings.datascience.core import setup_logging
 from ayaavalon.www.www import app
 

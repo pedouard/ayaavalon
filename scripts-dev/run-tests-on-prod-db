@@ -17,7 +17,7 @@ def call(route, **kwargs):
     print("Calling:", route)
     kwargs = {k:str(v) for k,v in kwargs.items()}
     print("args", kwargs)
-    r = requests.get("http://0.0.0.0:5000" + route, params=kwargs)
+    r = requests.get("http://0.0.0.0:6444" + route, params=kwargs)
     assert r.status_code == 200
 
     try:

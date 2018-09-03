@@ -28,7 +28,7 @@ def get_game_state(userid):
     if player is None:
         raise WithingsException(*status.USER_NOT_FOUND)
 
-    p = g._get_by_id_player(player.id_player)
+    p = g._get_by_userid(userid)
     return json_response({
         'status': status.OK,
         'body': g.dump_state(p)
@@ -61,8 +61,7 @@ def join_game(userid):
 })
 @handle_exceptions
 def start_game(userid):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
     g.start(p)
     return json_response({
         'status': status.OK,
@@ -106,8 +105,7 @@ def abort_game():
 })
 @handle_exceptions
 def propose_mission(userid, members, lady=0):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
     members = json.loads(members)
     g.propose_mission(p, members, lady)
 
@@ -124,8 +122,7 @@ def propose_mission(userid, members, lady=0):
 })
 @handle_exceptions
 def vote(userid, v):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
     g.vote(p, v)
 
     return json_response({
@@ -141,8 +138,7 @@ def vote(userid, v):
 })
 @handle_exceptions
 def do_mission(userid, v):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
     g.do_mission(p, v)
 
     return json_response({
@@ -161,8 +157,7 @@ def do_mission(userid, v):
 # TODO can kill merlin even if evil won
 # TODO cannot kill yourself or a an evil guy
 def kill_merlin(userid, target):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
     g.assassinate(p, target)
 
     return json_response({
@@ -179,8 +174,7 @@ def kill_merlin(userid, target):
 @handle_exceptions
     # TODO
 def use_lady(userid, target):
-    id_player = session.query(Player).filter_by(userid_player=userid).first().id_player
-    p = check_player(id_player)
+    p = check_player(userid)
 
     return json_response({
         'status': status.OK,
@@ -197,12 +191,12 @@ def dump_database():
 
 
 #TODO refacto : get id_player from session_id, and check_player in a decorator
-def check_player(id_player):
-    player = session.query(Player).filter_by(id_player=id_player).first()
+def check_player(userid):
+    player = session.query(Player).filter_by(userid_player=userid).first()
     if player is None:
         raise WithingsException(*status.USER_NOT_FOUND)
 
-    p = g._get_by_id_player(id_player)
+    p = g._get_by_userid(userid)
     if not p:
         raise WithingsException(*status.NOT_IN_THE_GAME)
 
