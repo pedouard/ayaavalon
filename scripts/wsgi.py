@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import env
 from withings.datascience.core import setup_logging
 from ayaavalon.www.www import app
 
