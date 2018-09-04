@@ -76,6 +76,18 @@ class Game(Base):
         self.version_game = version
 
 
+class Role(Base):
+    __tablename__ = "role"
+
+    id_role = Column(Integer, primary_key=True)
+    id_game = Column(Integer, ForeignKey('game.id_game'))
+    id_player = Column(Integer, ForeignKey('player.userid_player'))
+
+    role = Column(Integer)
+
+    has_won = Column(Boolean)
+
+
 class GameStats(Base):
     __tablename__ = "gamestats"
 
@@ -89,50 +101,32 @@ class GameStats(Base):
     merlin_killed = Column(Boolean)
     merlin_targeted = Column(Integer, ForeignKey('player.userid_player'))
 
-    merlin = Column(Integer, ForeignKey('player.userid_player'))
-    perceval = Column(Integer, ForeignKey('player.userid_player'))
-    galahad = Column(Integer, ForeignKey('player.userid_player'))
-    mordred = Column(Integer, ForeignKey('player.userid_player'))
-    morgana = Column(Integer, ForeignKey('player.userid_player'))
-    oberon = Column(Integer, ForeignKey('player.userid_player'))
-    assassin = Column(Integer, ForeignKey('player.userid_player'))
 
-    @staticmethod
-    def from_game(game):
-        if type(game) != Game:
-            raise TypeError('argument should be a Game record.')
+def add_game_stats(id_game, info, session):
+    """
+    Creates all database records for a game, given an id_game and a game_log dict named 'info'.
+    """
+    session.commit()
 
-        info = game.info_game
-        print(info)
-
-        player_roles = {}
-        for role in [MERLIN, PERCI, GALAHAD, MORDRED, MORGANA, ASSASSIN, OBERON]:
-            for player, player_role in zip(info['players'], info['roles']):
-                if role == player_role:
-                    player_roles[role] = player
-                    break
-            else:
-                player_roles[role] = None
-
-        gs = GameStats(
-            id_game=game.id_game,
-            host=info['host'],
-            n_players=len(info['players']),
-
-            good_wins=info['good_wins'],
-            merlin_killed=info['merlin_killed'],
-            merlin_targeted=info['merlin_targeted'],
-
-            merlin=player_roles[MERLIN],
-            perceval=player_roles[PERCI],
-            galahad=player_roles[GALAHAD],
-            mordred=player_roles[MORDRED],
-            morgana=player_roles[MORGANA],
-            oberon=player_roles[ASSASSIN],
-            assassin=player_roles[OBERON],
+    for player, player_role in zip(info['players'], info['roles']):
+        role = Role(
+            id_game=id_game,
+            id_player=player,
+            role=player_role,
         )
+        session.add(role)
 
-        return gs
+    gs = GameStats(
+        id_game=id_game,
+        host=info['host'],
+        n_players=len(info['players']),
+
+        good_wins=info['good_wins'],
+        merlin_killed=info['merlin_killed'],
+        merlin_targeted=info['merlin_targeted'],
+    )
+    session.add(gs)
+
 
 # def update_rankings():
 #     ps = PlayerStats.objects

@@ -1,0 +1,163 @@
+{
+    "game_setup": {
+        "characters": [0, 1, 3, 3, 3, 3, 10, 11, 12, 13],
+        "fails": [1, 1, 1, 2, 1],
+        "imposition_at": 5,
+        "lady": true,
+        "missions": [3, 4, 4, 5, 5]
+    },
+    "good_wins": true,
+    "host": 109,
+    "merlin_killed": 0,
+    "merlin_targeted": 104,
+    "players": [100, 101, 102, 103, 104, 105, 106, 107, 108, 109],
+    "roles": [10, 0, 3, 1, 13, 12, 3, 3, 3, 11],
+    "turn": [
+        {
+            "missions": [
+                {
+                    "accepted": 1,
+                    "arthur": 100,
+                    "fails": 0,
+                    "has_lady": false,
+                    "id_mission": 0,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2],
+                    "success": 3,
+                    "used_lady_on": null,
+                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "who_failed": []
+                }
+            ]
+        },
+        {
+            "missions": [
+                {
+                    "accepted": 0,
+                    "arthur": 101,
+                    "fails": null,
+                    "has_lady": false,
+                    "id_mission": 0,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": null,
+                    "used_lady_on": null,
+                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "who_failed": []
+                },
+                {
+                    "accepted": 0,
+                    "arthur": 102,
+                    "fails": null,
+                    "has_lady": false,
+                    "id_mission": 1,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": null,
+                    "used_lady_on": null,
+                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "who_failed": []
+                },
+                {
+                    "accepted": 0,
+                    "arthur": 103,
+                    "fails": null,
+                    "has_lady": false,
+                    "id_mission": 2,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": null,
+                    "used_lady_on": null,
+                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "who_failed": []
+                },
+                {
+                    "accepted": 0,
+                    "arthur": 104,
+                    "fails": null,
+                    "has_lady": false,
+                    "id_mission": 3,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": null,
+                    "used_lady_on": null,
+                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "who_failed": []
+                },
+                {
+                    "accepted": -1,
+                    "arthur": 105,
+                    "fails": 4,
+                    "has_lady": false,
+                    "id_mission": 4,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": 0,
+                    "used_lady_on": null,
+                    "votes": [],
+                    "who_failed": [100, 101, 102, 103]
+                }
+            ]
+        },
+        {
+            "missions": [
+                {
+                    "accepted": 1,
+                    "arthur": 106,
+                    "fails": 0,
+                    "has_lady": true,
+                    "id_mission": 0,
+                    "lady": 100,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3],
+                    "success": 4,
+                    "used_lady_on": null,
+                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "who_failed": []
+                }
+            ]
+        },
+        {
+            "missions": [
+                {
+                    "accepted": 1,
+                    "arthur": 107,
+                    "fails": 5,
+                    "has_lady": true,
+                    "id_mission": 0,
+                    "lady": 101,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3, 4],
+                    "success": 0,
+                    "used_lady_on": 103,
+                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "who_failed": [100, 101, 102, 103, 104]
+                }
+            ]
+        },
+        {
+            "missions": [
+                {
+                    "accepted": 1,
+                    "arthur": 108,
+                    "fails": 0,
+                    "has_lady": false,
+                    "id_mission": 0,
+                    "lady": null,
+                    "lady_claimed_to_see": null,
+                    "members": [0, 1, 2, 3, 4],
+                    "success": 5,
+                    "used_lady_on": null,
+                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "who_failed": []
+                }
+            ]
+        }
+    ]
+}

@@ -11,7 +11,6 @@ import sys
 from datetime import datetime
 
 from .utils import reset_db
-from ayaavalon.database import create_session, engine
 
 now = datetime.now()
 
@@ -48,7 +47,7 @@ def check_equal(value, target):
 
 
 def test_play_one_game():
-    reset_db()
+    session = reset_db()
 
     status, body = call("/abort_game")
     check_status(status, body, 0)
@@ -354,8 +353,7 @@ def test_play_one_game():
     s = body['stats']
     # print(s)
 
-    status, body = call("/stats")
+    status, body = call("/stats/roles")
     check_status(status, body, 0)
-    check_equal(body["n_game"], 1)
-    check_equal(body["n_good_wins"], 1)
-    check_equal(body["n_evil_wins"], 0)
+    assert len(body["role_Merlin"]) == 1
+    assert len(body["role_Good guy"]) == 4

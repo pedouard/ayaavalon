@@ -4,22 +4,28 @@ import os
 
 from sqlalchemy.engine import reflection
 from sqlalchemy.schema import MetaData, Table, DropTable, ForeignKeyConstraint, DropConstraint
-from ayaavalon.database import create_session, engine
+from ayaavalon.database import create_session, engine, _Session
 
 
 def reset_db():
+    global _Session
+
     # create a sqlalchemy session, engine
     session = create_session()
+    _Session.close()
 
     # drop and recreate tables
-    metadata = MetaData()
     db_drop_everything(engine)
+
+    metadata = MetaData()
     metadata.create_all(engine)
 
     # run sqlalchemy migrations
     __dir__ = os.path.dirname(os.path.realpath(__file__))
     alembic_cfg = Config(os.path.join(__dir__, "alembic.ini"))
     command.upgrade(alembic_cfg, 'head')
+
+    return session
 
 
 

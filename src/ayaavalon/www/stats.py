@@ -12,6 +12,7 @@ from ayaavalon.database import Game, GameStats
 
 from ayaavalon.database import session
 from ayaavalon.www import app
+from ayaavalon.stats import get_role_stats
 
 
 # TODO use this json_response everywhere
@@ -68,6 +69,14 @@ def get_game(id):
         'body': format_game(game, game_stats),
     })
 
+@app.route("/stats/roles")
+@nocache
+@handle_exceptions
+def get_stats_roles():
+    return json_response({
+        'status': status.OK,
+        'body': get_role_stats(session),
+    })
 
 @app.route("/stats")
 @nocache
@@ -101,4 +110,3 @@ def get_stats():
         'status': status.OK,
         'body': stats,
     })
-

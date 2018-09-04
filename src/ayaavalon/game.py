@@ -4,7 +4,7 @@ import random
 from withings.datascience.core.flask_utils import WithingsException
 
 from ayaavalon.database import Game as GameDatabase
-from ayaavalon.database import GameStats
+from ayaavalon.database import add_game_stats
 from ayaavalon.www import status
 from ayaavalon.constants import *
 
@@ -237,7 +237,7 @@ class Game():
             'success': None,
 
             'has_lady': self.lady,
-            'lady': self.players[lady].userid if self.lady else -1,
+            'lady': self.players[lady].userid if self.lady else None,
             'used_lady_on': None,
             'lady_claimed_to_see': None,
         })
@@ -406,8 +406,8 @@ class Game():
         v = self.__version__
         game_record = GameDatabase(info=d, version=v)
         self.session.add(game_record)
-        self.session.flush()
+        self.session.commit()
         print('added game record', d)
 
-        self.session.add(GameStats.from_game(game_record))
+        add_game_stats(game_record.id_game, d, self.session)
         print('added stats record')
