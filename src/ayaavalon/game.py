@@ -227,7 +227,7 @@ class Game():
         self.game_log['turn'][-1]['missions'].append({
             'id_mission': id_mission,
             'arthur': p.userid,
-            'members': members,
+            'members': [self.players[m].userid for m in members],
 
             'votes': [],
             'accepted': -1,  # -1 imposed, 0 refused, 1 accepted

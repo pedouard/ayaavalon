@@ -1,6 +1,7 @@
 from ayaavalon.database import Role
 from ayaavalon.constants import NAMES
 import sqlalchemy as sa
+from sqlalchemy import desc
 #from sqlalchemy.db.func import count
 
 
@@ -19,9 +20,11 @@ def get_role_stats(session):
     stats = {}
 
     for role, name in NAMES.items():
-        a = session.query(Role.id_player, sa.func.count('*')) \
+        a = session.query(Role.id_player, sa.func.count('*').label('count')) \
             .filter(Role.role == role) \
-            .group_by(Role.id_player).all()
+            .group_by(Role.id_player) \
+            .order_by(desc('count'), Role.id_player) \
+            .all()
         stats['role_{}'.format(name)] = a
 
     return stats
