@@ -85,7 +85,36 @@ class Role(Base):
 
     role = Column(Integer)
 
-    has_won = Column(Boolean)
+
+class Mission(Base):
+    __tablename__ = 'mission'
+
+    id_mission = Column(Integer, primary_key=True)
+    id_game = Column(Integer, ForeignKey('game.id_game'))
+
+    arthur = Column(Integer, ForeignKey('player.userid_player'))
+    turn = Column(Integer)
+    mission = Column(Integer)
+
+    accepted = Column(Boolean)
+    imposed = Column(Boolean)
+    succeded = Column(Boolean)
+
+    n_fails = Column(Integer)
+    n_success = Column(Integer)
+
+
+class Vote(Base):
+    __tablename__ = 'vote'
+
+    id_vote = Column(Integer, primary_key=True)
+    id_mission = Column(Integer, ForeignKey('mission.id_mission'))
+
+    id_player = Column(Integer, ForeignKey('player.userid_player'))
+    id_target = Column(Integer, ForeignKey('player.userid_player'))
+
+    vote = Column(Boolean)
+
 
 
 class GameStats(Base):
@@ -108,6 +137,7 @@ def add_game_stats(id_game, info, session):
     """
     session.commit()
 
+    # adding role
     for player, player_role in zip(info['players'], info['roles']):
         role = Role(
             id_game=id_game,
@@ -116,6 +146,7 @@ def add_game_stats(id_game, info, session):
         )
         session.add(role)
 
+    # adding gamestats
     gs = GameStats(
         id_game=id_game,
         host=info['host'],
@@ -126,6 +157,34 @@ def add_game_stats(id_game, info, session):
         merlin_targeted=info['merlin_targeted'],
     )
     session.add(gs)
+
+    # adding missions and votes
+    for turn, turn_data in enumerate(info['turn']):
+        for mission, mission_data in enumerate(turn_data['missions']):
+            m = Mission(
+                id_game=id_game,
+                arthur=mission_data['arthur'],
+                turn=turn,
+                mission=mission,
+                accepted=mission_data['accepted'],
+                imposed=mission_data['imposed'],
+                succeded=mission_data['result'],
+                n_fails=mission_data['n_fails'],
+                n_success=mission_data['n_success'],
+            )
+            session.add(m)
+            id_mission = m.id_mission
+
+            for player, vote in zip(info['players'], mission_data['votes']):
+                for target in mission_data['members']:
+                    v = Vote(
+                        id_mission=id_mission,
+                        id_player=player,
+                        id_target=target,
+                        vote=vote,
+                    )
+                    session.add(v)
+
 
 
 # def update_rankings():

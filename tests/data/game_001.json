@@ -16,17 +16,19 @@
         {
             "missions": [
                 {
-                    "accepted": 1,
+                    "accepted": true,
                     "arthur": 100,
-                    "fails": 0,
                     "has_lady": false,
                     "id_mission": 0,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
-                    "members": [100, 101, 102],
-                    "success": 3,
+                    "members": [105, 106, 108],
+                    "n_fails": 0,
+                    "n_success": 3,
+                    "result": true,
                     "used_lady_on": null,
-                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "votes": [false, true, true, false, true, true, true, false, true, true],
                     "who_failed": []
                 }
             ]
@@ -34,71 +36,81 @@
         {
             "missions": [
                 {
-                    "accepted": 0,
+                    "accepted": false,
                     "arthur": 101,
-                    "fails": null,
                     "has_lady": false,
                     "id_mission": 0,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
-                    "members": [100, 101, 102, 103],
-                    "success": null,
+                    "members": [100, 105, 102, 108],
+                    "n_fails": null,
+                    "n_success": null,
+                    "result": null,
                     "used_lady_on": null,
-                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "votes": [true, false, true, false, false, false, false, false, false, false],
                     "who_failed": []
                 },
                 {
-                    "accepted": 0,
+                    "accepted": false,
                     "arthur": 102,
-                    "fails": null,
                     "has_lady": false,
                     "id_mission": 1,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
-                    "members": [100, 101, 102, 103],
-                    "success": null,
+                    "members": [106, 107, 108, 109],
+                    "n_fails": null,
+                    "n_success": null,
+                    "result": null,
                     "used_lady_on": null,
-                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "votes": [false, false, true, false, false, true, true, false, false, false],
                     "who_failed": []
                 },
                 {
-                    "accepted": 0,
+                    "accepted": false,
                     "arthur": 103,
-                    "fails": null,
                     "has_lady": false,
                     "id_mission": 2,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
                     "members": [100, 101, 102, 103],
-                    "success": null,
+                    "n_fails": null,
+                    "n_success": null,
+                    "result": null,
                     "used_lady_on": null,
-                    "votes": [false, false, false, false, false, false, false, false, false, false],
+                    "votes": [false, false, false, true, false, false, false, false, false, true],
                     "who_failed": []
                 },
                 {
-                    "accepted": 0,
+                    "accepted": false,
                     "arthur": 104,
-                    "fails": null,
                     "has_lady": false,
                     "id_mission": 3,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
-                    "members": [100, 101, 102, 103],
-                    "success": null,
+                    "members": [104, 106, 107, 109],
+                    "result": null,
+                    "n_fails": null,
+                    "n_success": null,
                     "used_lady_on": null,
                     "votes": [false, false, false, false, false, false, false, false, false, false],
                     "who_failed": []
                 },
                 {
-                    "accepted": -1,
+                    "accepted": null,
                     "arthur": 105,
-                    "fails": 4,
                     "has_lady": false,
                     "id_mission": 4,
+                    "imposed": true,
                     "lady": null,
                     "lady_claimed_to_see": null,
                     "members": [100, 101, 102, 103],
-                    "success": 0,
+                    "n_fails": 4,
+                    "n_success": 0,
+                    "result": false,
                     "used_lady_on": null,
                     "votes": [],
                     "who_failed": [100, 101, 102, 103]
@@ -108,17 +120,19 @@
         {
             "missions": [
                 {
-                    "accepted": 1,
+                    "accepted": true,
                     "arthur": 106,
-                    "fails": 0,
                     "has_lady": true,
                     "id_mission": 0,
+                    "imposed": false,
                     "lady": 100,
                     "lady_claimed_to_see": null,
                     "members": [100, 101, 102, 103],
-                    "success": 4,
+                    "n_fails": 0,
+                    "n_success": 4,
+                    "result": true,
                     "used_lady_on": null,
-                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "votes": [true, true, false, true, true, true, true, false, true, true],
                     "who_failed": []
                 }
             ]
@@ -126,17 +140,19 @@
         {
             "missions": [
                 {
-                    "accepted": 1,
+                    "accepted": true,
                     "arthur": 107,
-                    "fails": 5,
                     "has_lady": true,
                     "id_mission": 0,
+                    "imposed": false,
                     "lady": 101,
                     "lady_claimed_to_see": null,
                     "members": [100, 101, 102, 103, 104],
-                    "success": 0,
+                    "n_fails": 5,
+                    "n_success": 0,
+                    "result": false,
                     "used_lady_on": 103,
-                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "votes": [false, true, true, false, true, true, true, false, true, true],
                     "who_failed": [100, 101, 102, 103, 104]
                 }
             ]
@@ -144,17 +160,19 @@
         {
             "missions": [
                 {
-                    "accepted": 1,
+                    "accepted": true,
                     "arthur": 108,
-                    "fails": 0,
                     "has_lady": false,
                     "id_mission": 0,
+                    "imposed": false,
                     "lady": null,
                     "lady_claimed_to_see": null,
-                    "members": [100, 101, 102, 103, 104],
-                    "success": 5,
+                    "members": [104, 105, 106, 107, 108],
+                    "n_fails": 0,
+                    "n_success": 5,
+                    "result": true,
                     "used_lady_on": null,
-                    "votes": [true, true, true, true, true, true, true, true, true, true],
+                    "votes": [false, true, true, false, true, true, true, true, true, false],
                     "who_failed": []
                 }
             ]

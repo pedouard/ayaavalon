@@ -1,4 +1,4 @@
-from ayaavalon.database import Role
+from ayaavalon.database import Role, Vote
 from ayaavalon.constants import NAMES
 import sqlalchemy as sa
 from sqlalchemy import desc
@@ -14,9 +14,6 @@ def get_role_stats(session):
     role_mordred: ...
 
     """
-
-    r = session.query(Role)
-
     stats = {}
 
     for role, name in NAMES.items():
@@ -26,5 +23,23 @@ def get_role_stats(session):
             .order_by(desc('count'), Role.id_player) \
             .all()
         stats['role_{}'.format(name)] = a
+
+    return stats
+
+
+def get_connection_stats(session):
+    """
+    Returns a dict containing two keys 'voted_for' and 'voted_against'.
+    Each key contains tuples (id_player, id_target, count).
+    """
+
+    stats = {}
+    for vote, name in zip([True, False], ['voted_for', 'voted_against']):
+        v = session.query(Vote.id_player, Vote.id_target, sa.func.count('*').label('count')) \
+            .filter(Vote.vote == vote) \
+            .group_by(Vote.id_player, Vote.id_target) \
+            .order_by(Vote.id_player, Vote.id_target) \
+            .all()
+        stats[name] = v
 
     return stats

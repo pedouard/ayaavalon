@@ -7,6 +7,7 @@ from ayaavalon.www.status import *
 import requests
 import json
 import sys
+import os
 
 from datetime import datetime
 
@@ -346,12 +347,13 @@ def test_play_one_game():
     check_equal(body["n_game"], 1)
     id_ = body['games'][0]['id']
 
-    status, body = call("/games/{}".format(id_))
-    check_status(status, body, 0)
-    r = body['data']
-    # print(r)
-    s = body['stats']
-    # print(s)
+    print("Checking that info dict is well writen in database.")
+    game_file = os.path.join(os.path.dirname(__file__), 'data', 'game_000.json')
+    expected = json.loads(open(game_file, 'r').read())
+    # TODO reorder players
+    body['games'][0]['data']['roles'] = expected['roles']
+    body['games'][0]['data']['merlin_targeted'] = expected['merlin_targeted']
+    assert body['games'][0]['data'] == expected
 
     status, body = call("/stats/roles")
     check_status(status, body, 0)

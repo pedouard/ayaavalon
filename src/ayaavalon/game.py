@@ -181,9 +181,10 @@ class Game():
             raise WithingsException(*status.NOT_ENOUGH_PLAYERS)
 
         self.game_setup = GAME_SETUPS[self.nplayers]
+        self.game_setup["characters"] = sorted(self.game_setup["characters"])
         self.n_mission_before_imposition = self.game_setup['imposition_at']
 
-        characters = self.game_setup["characters"]
+        characters = list(self.game_setup["characters"])
         random.shuffle(characters)
         for i, p in enumerate(self.players):
             p.role = characters[i]
@@ -230,11 +231,13 @@ class Game():
             'members': [self.players[m].userid for m in members],
 
             'votes': [],
-            'accepted': -1,  # -1 imposed, 0 refused, 1 accepted
+            'accepted': None,
+            'imposed': self.imposition_in == 1,
 
             'who_failed': [],
-            'fails': None,
-            'success': None,
+            'n_fails': None,
+            'n_success': None,
+            'result': None,
 
             'has_lady': self.lady,
             'lady': self.players[lady].userid if self.lady else None,
@@ -344,14 +347,14 @@ class Game():
         if votes_for > self.nplayers / 2.0:
             # Mission accepted
             self.state = STATE_MISSION_PENDING
-            self.game_log['turn'][-1]['missions'][-1]['accepted'] = 1
+            self.game_log['turn'][-1]['missions'][-1]['accepted'] = True
         else:
             # Mission refused
             self._reset_players()
             self.state = STATE_WAITING_FOR_MISSION
             self.idx = (self.idx+1) % self.nplayers
             self.imposition_in -= 1
-            self.game_log['turn'][-1]['missions'][-1]['accepted'] = 0
+            self.game_log['turn'][-1]['missions'][-1]['accepted'] = False
 
         self.game_log['turn'][-1]['missions'][-1]['votes'] = [p.has_voted for p in self.players]
 
@@ -365,8 +368,8 @@ class Game():
 
         fails = len([p.participation for p in self.players if p.is_member and not p.participation])
         success = len([p.participation for p in self.players if p.is_member and p.participation])
-        self.game_log['turn'][-1]['missions'][-1]['fails'] = fails
-        self.game_log['turn'][-1]['missions'][-1]['success'] = success
+        self.game_log['turn'][-1]['missions'][-1]['n_fails'] = fails
+        self.game_log['turn'][-1]['missions'][-1]['n_success'] = success
         self.game_log['turn'][-1]['missions'][-1]['who_failed'] = [p.userid for p in self.players if p.is_member and not p.participation]
 
         if fails >= self.fails_required:
@@ -377,6 +380,8 @@ class Game():
         else:
             # Mission succeded
             self.mission_results.append(True)
+
+        self.game_log['turn'][-1]['missions'][-1]['result'] = self.mission_results[-1]
 
         self._assess_game_end()
 
